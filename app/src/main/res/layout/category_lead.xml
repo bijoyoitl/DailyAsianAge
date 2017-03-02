@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/head_cat"
+        android:clickable="false"
+        android:layout_gravity="right"
+        android:gravity="right">
+
+        <com.dailyasianage.android.TextView.LobsterTwoTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/cat_titleTextView"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:clickable="false"
+            android:text="FrontPage"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+     android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/newsCardView">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:weightSum="1">
+
+                <com.dailyasianage.android.TextView.GeorgiaTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/heading_text_size"
+                    android:text="@string/heading"
+                    android:layout_marginLeft="3sp"
+                    android:textColor="#000000"
+                    android:textStyle="bold"
+                    android:id="@+id/headingTextView"/>
+
+
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="2sp"
+                    android:visibility="visible"
+                    android:layout_marginTop="2dp"
+                    android:src="@drawable/dash_big"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5sp"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/time"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_marginLeft="3sp"
+                        android:textColor="#38909d"
+                        android:textSize="@dimen/time_text_size"
+                        android:textAllCaps="true"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/timeTextView"
+                        android:text="time"/>
+                </LinearLayout>
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/dummy"
+                    android:id="@+id/cardImageView"
+                    android:layout_marginBottom="5sp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="details"
+                    android:textStyle="normal"
+                    android:textSize="@dimen/details_text_size"
+                    android:maxLines="3"
+                    android:lines="3"
+                    android:visibility="gone"
+                    android:ellipsize="end"
+                    android:id="@+id/detailsTextView"/>
+
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+
+</LinearLayout>

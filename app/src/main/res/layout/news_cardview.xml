@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8sp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/head_cat"
+        android:clickable="false"
+        android:visibility="gone"
+        android:layout_gravity="right"
+        android:gravity="right">
+
+        <com.dailyasianage.android.TextView.LobsterTwoTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Front Page"
+            android:id="@+id/cat_titleTextView"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:id="@+id/newsCardView">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <com.dailyasianage.android.TextView.GeorgiaTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lines="4"
+                android:textSize="@dimen/heading_text_size"
+                android:text="@string/heading"
+                android:layout_marginLeft="4sp"
+                android:layout_marginTop="3sp"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:id="@+id/headingTextView"/>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/dasg_small"/>
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:background="#FCFDCA"-->
+                <!--android:layout_marginBottom="2dp"-->
+                <!--android:layout_marginTop="2dp"-->
+                <!--android:layout_height="120dp">-->
+
+                <!--<ImageView-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:adjustViewBounds="true"-->
+                    <!--android:scaleType="fitCenter"-->
+                    <!--android:src="@drawable/dummy_l"-->
+                    <!--android:id="@+id/cardImageView" />-->
+
+            <!--</LinearLayout>-->
+
+            <com.dailyasianage.android.ImageGallery.SquareLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+
+                    <ImageView
+                        android:id="@+id/cardImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:visibility="visible"
+                        android:src="@drawable/dummy_l"
+                        android:scaleType="centerCrop" />
+
+                </RelativeLayout>
+
+
+            </com.dailyasianage.android.ImageGallery.SquareLayout>
+            <com.dailyasianage.android.TextView.GeorgiaTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:layout_marginLeft="3sp"
+                android:text="details"
+                android:textSize="12sp"
+                android:textColor="@android:color/black"
+                android:visibility="visible"
+                android:maxLines="4"
+                android:lines="4"
+                android:ellipsize="end"
+                android:id="@+id/detailsTextView"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/dasg_small"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+             >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+
+                    android:layout_marginLeft="3dp"
+                    android:scaleType="center"
+
+                    android:layout_gravity="center"
+                    android:src="@drawable/time"
+                     />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="@dimen/time_text_size"
+                    android:textColor="#38909d"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="true"
+                    android:id="@+id/timeTextView"
+                    android:text="time"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+</LinearLayout>

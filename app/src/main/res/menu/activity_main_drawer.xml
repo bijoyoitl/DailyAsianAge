@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/group1" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@mipmap/ic_launcher"
+            android:title="FrontPage" />
+    </group>
+    <group android:id="@+id/group2" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@mipmap/ic_launcher"
+            android:title="Asia" />
+    </group>
+    <group android:id="@+id/group3" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_slideshow"
+            android:icon="@mipmap/ic_launcher"
+            android:title="City" />
+    </group>
+    <group android:id="@+id/group4" android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_manage"
+            android:icon="@mipmap/ic_launcher"
+            android:title="World" />
+    </group>
+    <group android:id="@+id/group5" android:checkableBehavior="single">
+        <item
+            android:id="@+id/op_ed"
+            android:icon="@mipmap/ic_launcher"
+            android:title="OP-ED" />
+    </group>
+    <group android:id="@+id/group6" android:checkableBehavior="single">
+        <item
+            android:id="@+id/editorial"
+            android:icon="@mipmap/ic_launcher"
+            android:title="Editorial" />
+    </group>
+    <group android:id="@+id/group7" android:checkableBehavior="single">
+        <item
+            android:id="@+id/business"
+            android:icon="@mipmap/ic_launcher"
+            android:title="Business" />
+    </group>
+
+
+</menu>

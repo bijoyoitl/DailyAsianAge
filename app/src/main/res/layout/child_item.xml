@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="5dp"
+    android:baselineAligned="false">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginLeft="20dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/dItemLayout"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="40sp"
+                android:layout_height="40sp"
+                android:layout_marginStart="12dp"
+                android:src="@mipmap/apps_logo"
+                android:layout_gravity="center"
+                android:layout_marginLeft="1dp"
+                android:id="@+id/iconImageView"
+                />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </LinearLayout>
+            <com.dailyasianage.android.TextView.LobsterTwoTextView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="23dp"
+                android:layout_height="wrap_content"
+                android:text="Drawer List"
+                android:layout_marginRight="12sp"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:id="@+id/listTextView"
+                android:layout_weight="0.32" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/arrow_g"
+                android:id="@+id/arrowImageView"
+                android:layout_marginRight="12dp"
+                android:layout_weight="0.03" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
