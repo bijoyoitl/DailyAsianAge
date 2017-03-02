@@ -27,6 +27,9 @@ import android.widget.Toast;
 
 import com.dailyasianage.android.Adpter.ExAdapter;
 import com.dailyasianage.android.All_URL.UrlLink;
+import com.dailyasianage.android.Database.AllNewsManager;
+import com.dailyasianage.android.Database.CategoryManager;
+import com.dailyasianage.android.Database.DrawerMenuManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.Fragments.AllCatFragment;
 import com.dailyasianage.android.Fragments.FavoriteFragment;
@@ -69,7 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
     Fragment fragment = null;
     Fragment fragment2 = null;
-    Handler handler1;
+
+    DrawerMenuManager drawerMenuManager;
+    AllNewsManager allNewsManager;
+    CategoryManager categoryManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
 
         this.context = this;
         database = new NewsDatabase(context);
+        drawerMenuManager = new DrawerMenuManager(context);
+        allNewsManager = new AllNewsManager(context);
+        categoryManager = new CategoryManager(context);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -99,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
         expandableListView.setClickable(true);
 
 
-        Intent i = new Intent(MainActivity.this, BackgroundUpdateService.class);
-        MainActivity.this.startService(i);
+//        Intent i = new Intent(MainActivity.this, BackgroundUpdateService.class);
+//        MainActivity.this.startService(i);
 
         expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
@@ -118,8 +127,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (adapter.getChildrenCount(i) == 0) {
-                    childs = database.getAllChildInfo(cat);
-//                    database.close();
+                    childs = drawerMenuManager.getAllChildInfo(cat);
                     adapter.addChildren(i, childs);
 
                     if (cat != null) {
@@ -228,16 +236,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     protected void onResume() {
 //        new AppRater(context).show();
         super.onResume();
-        heading = database.getAllParentInfo();
+        heading = drawerMenuManager.getAllParentInfo();
         adapter = new ExAdapter(context, heading, childs);
         expandableListView.setAdapter(adapter);
-
     }
+
 
     public void view(int i) {
         if (i == 0) {
@@ -318,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
         int l = 0;
         String idList = "";
         String catnews = "";
-        String[] catID = {"1","2","3"};
+        String[] catID = {"1", "2", "3"};
         String f = "";
         ArrayList nId = new ArrayList();
         String result;
@@ -348,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             String response = new HTTPGET().SendHttpRequest(urlLink.multiCategory + catIdString);
-            Log.e("MainActivity.java", " cat 365 : "+catIdString);
+            Log.e("MainActivity.java", " cat 365 : " + catIdString);
             try {
                 jsonObject = new JSONObject(response);
                 catnews = jsonObject.getString("cat");
@@ -361,8 +368,8 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         catnews = jsonObject.getString(key);
 //                        if (isInternetConnection) {
-                        database.cleanCatByID(key);
-                        database.addCatNews(String.valueOf(key), catnews);
+                        categoryManager.cleanCatByID(key);
+                        categoryManager.addCatNews(String.valueOf(key), catnews);
                     } catch (JSONException e) {
                         // Something went wrong!
                     }
@@ -377,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject dbobject;
                 int catRun = 0;
                 for (i = 0; i < catID.length; i++) {
-                    String dbArray = database.getCatNews(String.valueOf(catID[i]));
+                    String dbArray = categoryManager.getCatNews(String.valueOf(catID[i]));
 //                    Log.e(LOG, "cat Id = " + catID[i]);
                     dbobject = new JSONObject(dbArray);
                     catnews = dbobject.getString("nid");
@@ -409,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
                         f += ',' + catNewsId;
                     }
                     id = Integer.parseInt(allNewsId.getString(i));
-                    if (database.getNewsExist(id) == 0) {
+                    if (allNewsManager.getNewsExist(id) == 0) {
                         //  Log.e(LOG, "New News = " + id);
                         nId.add(id);
                     }
@@ -471,7 +478,7 @@ public class MainActivity extends AppCompatActivity {
                     String imageLink = urlLink.imageLink;
 
                     news = new News(catId, id, heading, sub_heading, shoulder, pub_time, reporter, details, imageLink + image, publish_serial, top_news, home_slider, inside_news);
-                    database.addNews(news);
+                    allNewsManager.addNews(news);
                 }
 
             } catch (JSONException e) {

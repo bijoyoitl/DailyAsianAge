@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.dailyasianage.android.Adpter.FrontPageAdapter;
 import com.dailyasianage.android.Adpter.RecyclerAdapter;
 import com.dailyasianage.android.ConnectionDetector;
+import com.dailyasianage.android.Database.AllNewsManager;
+import com.dailyasianage.android.Database.CategoryManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.R;
 import com.dailyasianage.android.item.News;
@@ -59,6 +61,9 @@ public class FrontPageFragment extends Fragment {
     public static boolean value = true;
     private boolean isTrue = false;
 
+    AllNewsManager allNewsManager;
+    CategoryManager categoryManager;
+
     public FrontPageFragment() {
         // Required empty public constructor
     }
@@ -71,6 +76,8 @@ public class FrontPageFragment extends Fragment {
 
         detector = new ConnectionDetector(getContext());
         database = new NewsDatabase(getContext());
+        allNewsManager=new AllNewsManager(getActivity());
+        categoryManager=new CategoryManager(getActivity());
         isInternetConnection = detector.isConnectingToInternet();
 
         progressBar = (ProgressBar) view.findViewById(R.id.loading_progressBar);
@@ -138,14 +145,14 @@ public class FrontPageFragment extends Fragment {
                     final_news_id += ',' + cat;
                 }
 //                newsIds = database.getAllOfflineNews(final_news_id);
-                newsIds =  database.getCategoryNews(String.valueOf(1));
+                newsIds =  allNewsManager.getCategoryNews(String.valueOf(1));
             }
 //            recyclerView.setAdapter(new FrontPageAdapter(getActivity(), newsIds, catName, catPosition));
             recyclerView.setAdapter(new RecyclerAdapter(getActivity(), newsIds));
         }
 
         if (delete == true) {
-            database.deleteOldNews(tempNewsIds);
+            allNewsManager.deleteOldNews(tempNewsIds);
         }
 
         return view;
@@ -157,7 +164,7 @@ public class FrontPageFragment extends Fragment {
         int catRun = 0;
         try {
             for (int h = 0; h < catID.length; h++) {
-                String dbArray = database.getCatNews(String.valueOf(catID[h]));
+                String dbArray = categoryManager.getCatNews(String.valueOf(catID[h]));
                 dbobject = new JSONObject(dbArray);
                 catnews = dbobject.getString("nid");
                 array = new JSONArray(catnews);
@@ -178,7 +185,7 @@ public class FrontPageFragment extends Fragment {
             l = 0;
             for (int i = 0; i < allNewsId.length(); i++) {
                 catNewsId = String.valueOf(allNewsId.getString(i));
-                isTrue = database.getNewsAllExist(allNewsId.getInt(i)) == 0;
+                isTrue = allNewsManager.getNewsAllExist(allNewsId.getInt(i)) == 0;
                 Log.e("FrontPageFragment.java", " front page id : " + isTrue);
 
                 if (!Arrays.asList(catName).contains(catNewsId)) {
@@ -188,7 +195,7 @@ public class FrontPageFragment extends Fragment {
                         final_news_id += ',' + catNewsId;
                     }
                     id = Integer.parseInt(allNewsId.getString(i));
-                    if (database.getNewsExist(id) == 0) {
+                    if (allNewsManager.getNewsExist(id) == 0) {
                         //  Log.e(LOG, "New News = " + id);
                         nId.add(id);
                     }

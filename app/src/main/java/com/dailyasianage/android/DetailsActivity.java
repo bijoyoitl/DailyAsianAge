@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import com.dailyasianage.android.Adpter.RecyclerAdapter;
 import com.dailyasianage.android.Adpter.RelatedNewsAdapter;
+import com.dailyasianage.android.Database.AllNewsManager;
+import com.dailyasianage.android.Database.FavoriteNewsManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.ImageGallery.SlideshowDialogFragment;
 import com.dailyasianage.android.item.News;
@@ -68,6 +70,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     public DetailsActivity detailsActivity;
     ArrayList<News> newsArrayList = new ArrayList<News>();
 
+    AllNewsManager allNewsManager;
+    FavoriteNewsManager favoriteNewsManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +83,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         this.context = this;
 
         newsDatabase = new NewsDatabase(context);
+        allNewsManager=new AllNewsManager(context);
+        favoriteNewsManager=new FavoriteNewsManager(context);
         recyclerAdapter = new RecyclerAdapter();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -151,13 +158,13 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         shoulder = getIntent().getStringExtra("shoulder");
 
         if (shoulder != null) {
-            d_shoulderTextView.setVisibility(View.GONE);
+            d_shoulderTextView.setVisibility(View.VISIBLE);
             d_shoulderTextView.setText(shoulder);
 
         } else {
             d_shoulderTextView.setVisibility(View.GONE);
         }
-        if ((newsDatabase.getFavExit(fav_id)).equals("0")) {
+        if ((favoriteNewsManager.getFavExit(fav_id)).equals("0")) {
             d_favoriteImageView.setImageResource(R.drawable.favorite);
         } else {
             d_favoriteImageView.setImageResource(R.drawable.favorite_two);
@@ -176,7 +183,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void RelatedNews() {
-        newsIds = newsDatabase.getRelatedNews(catId, nid);
+        newsIds = allNewsManager.getRelatedNews(catId, nid);
         recyclerView.setAdapter(new RelatedNewsAdapter(context, newsIds));
 
     }
@@ -211,7 +218,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
             case R.id.d_favoriteImageView:
 
-                if ((newsDatabase.getFavExit(fav_id)).equals("0")) { //cheek exist or not in favorite table.
+                if ((favoriteNewsManager.getFavExit(fav_id)).equals("0")) { //cheek exist or not in favorite table.
                     fav_add();
                     d_favoriteImageView.setImageResource(R.drawable.favorite_two);
                 } else {
@@ -306,23 +313,21 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             speechButton.setImageResource(R.drawable.daudio);
             tts.stop();
             tts.shutdown();
-            Log.d("DetailsActivity.java", "TTS Destroyed");
         }
         super.onDestroy();
     }
 
     public void fav_add() {
         news_id = id.getText().toString();
-        newsDatabase.addFavorite(news_id); //add favorite id into favorite table.
+        favoriteNewsManager.addFavorite(news_id); //add favorite id into favorite table.
         d_favoriteImageView.setImageResource(R.drawable.favorite_two);
         recyclerAdapter.notifyDataSetChanged();
     }
 
 
     public void deleteFav() { //delete favorite id from favorite table.
-        NewsDatabase database = new NewsDatabase(context);
         news_id = id.getText().toString();
-        database.deleteFavid(news_id);
+        favoriteNewsManager.deleteFavid(news_id);
         d_favoriteImageView.setImageResource(R.drawable.favorite);
         recyclerAdapter.notifyDataSetChanged();
     }

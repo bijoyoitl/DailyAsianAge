@@ -12,6 +12,9 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.dailyasianage.android.All_URL.UrlLink;
+import com.dailyasianage.android.Database.AllNewsManager;
+import com.dailyasianage.android.Database.CategoryManager;
+import com.dailyasianage.android.Database.DrawerMenuManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.item.DbDrawerItem;
 import com.dailyasianage.android.util.HTTPGET;
@@ -42,8 +45,11 @@ public class SplashScreenActivity extends AppCompatActivity {
     DbDrawerItem drawerItem = null;
     String LOG;
     UrlLink urlLink;
-    Handler handler1;
     ArrayList<String> uncommon_news_id = new ArrayList<>();
+
+    DrawerMenuManager drawerMenuManager;
+    AllNewsManager allNewsManager;
+    CategoryManager categoryManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,24 +58,25 @@ public class SplashScreenActivity extends AppCompatActivity {
         this.context = this;
 
         database = new NewsDatabase(context);
+        drawerMenuManager=new DrawerMenuManager(context);
+        allNewsManager= new AllNewsManager(context);
+        categoryManager=new CategoryManager(context);
+
         detector = new ConnectionDetector(context);
         isInternetConnection = detector.isConnectingToInternet();
+
         circleProgressBar = (ProgressBar) findViewById(R.id.loading_progressBar);
         horizontalProgressBar = (ProgressBar) findViewById(R.id.splashProgressId);
         urlLink = new UrlLink();
 
-
-
         LOG = "SplashScreenActivity.java";
-        if (!isInternetConnection) {
-            circleProgressBar.setVisibility(View.GONE);
-            horizontalProgressBar.setVisibility(View.VISIBLE);
-        }
+
 
         if (isInternetConnection) {
             new CatInfoTask(context).execute();
         } else {
-
+            circleProgressBar.setVisibility(View.GONE);
+            horizontalProgressBar.setVisibility(View.VISIBLE);
             new Thread(new Runnable() { //thread
                 @Override
                 public void run() {
@@ -129,6 +136,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     JSONObject jsonObject = new JSONObject(response);
                     String cat = jsonObject.getString("c");
                     jsonObject = new JSONObject(cat);
+
                     Iterator<String> iterator = jsonObject.keys();
                     while (iterator.hasNext()) {
                         String key = iterator.next();
@@ -148,14 +156,17 @@ public class SplashScreenActivity extends AppCompatActivity {
                             itemArrayList.add(item);
                             drawerItem = new DbDrawerItem(catId);
                             itemArray.add(drawerItem);
+
                             if (allcat.equals("")) {
                                 allcat += catId;
                             } else {
                                 allcat += "," + catId;
                             }
 
-                            if (database.getDrawerCatExist(catId).equals("0")) {
-                                database.addDrawerList(item);
+                            if (drawerMenuManager.getDrawerCatExist(catId).equals("0")) {
+                                drawerMenuManager.addDrawerList(item);
+                            }else {
+                                drawerMenuManager.updateDrawerList(item,catId);
                             }
 
                         } catch (Exception e) {
@@ -195,7 +206,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                                 }
 
 
-                                String old_cat = database.getCatNews(String.valueOf(key));
+                                String old_cat = categoryManager.getCatNews(String.valueOf(key));
                                 JSONObject jsonObject1 = new JSONObject(old_cat);
                                 String cat_old = jsonObject1.getString("nid");
                                 JSONArray jArray2 = new JSONArray(cat_old);
@@ -221,7 +232,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                                 Log.e("Splash.java", " un common : " + uncommon_news_id.toString());
                                 if (!uncommon_news_id.equals("")) {
                                     Log.e("SA","uncommon : "+!uncommon_news_id.equals(""));
-                                    database.addCatNews(String.valueOf(key), cat_news);
+                                    categoryManager.addCatNews(String.valueOf(key), cat_news);
                                 }
 
                             } catch (JSONException e) {
@@ -236,19 +247,22 @@ public class SplashScreenActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            }
-            if (k == 1)
+                if (k == 1)
 
-            {
-                database.deleteOldNews(allcat);
+                {
+                    allNewsManager.deleteOldNews(allcat);
+                }
             }
-
             return response;
         }
 
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+
+
+
+
             Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);

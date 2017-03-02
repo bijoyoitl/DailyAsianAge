@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.dailyasianage.android.Adpter.HomeSettingsAdapter;
+import com.dailyasianage.android.Database.DrawerMenuManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.item.DbDrawerItem;
 import com.dailyasianage.android.item.HSItem;
@@ -37,6 +38,8 @@ public class HomeCustomizeActivity extends AppCompatActivity {
     HomeSettingsAdapter adapter;
     LinearLayout backImageView;
 
+    DrawerMenuManager drawerMenuManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,8 @@ public class HomeCustomizeActivity extends AppCompatActivity {
 
         this.context = this;
         database = new NewsDatabase(context);
+        drawerMenuManager=new DrawerMenuManager(context);
+
         listView = (ListView) findViewById(R.id.catIdListView);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         homeSettingImageView = (LinearLayout) findViewById(R.id.homeSettingImageView);
@@ -53,7 +58,7 @@ public class HomeCustomizeActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("");
         dbDrawerItemArrayList = new ArrayList<DbDrawerItem>();
 
-        dbDrawerItemArrayList = database.getAllDrawer(); // get cat name, id and image and finally save into dbdrawerarraylist.
+        dbDrawerItemArrayList = drawerMenuManager.getAllDrawer(); // get cat name, id and image and finally save into dbdrawerarraylist.
         LOG = "HomeCustomizeActivity.java";
         adapter = new HomeSettingsAdapter(this, dbDrawerItemArrayList);
         listView.setAdapter(adapter);  //set adapter

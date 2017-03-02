@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.dailyasianage.android.Database.DrawerMenuManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.DetailsActivity;
 import com.dailyasianage.android.MainActivity;
@@ -32,13 +33,15 @@ public class FrontPageAdapter extends RecyclerView.Adapter<FrontPageAdapter.News
     JSONArray CatP;
     public int currentP = 0;
     NewsDatabase database;
+    DrawerMenuManager drawerMenuManager;
 
     public FrontPageAdapter(Context context, ArrayList<News> arrayList, String[] catNames, JSONArray catPosition) {
         this.context = context;
         catName = catNames;
         CatP = catPosition;
         this.arrayList = arrayList;
-         database = new NewsDatabase(context);
+        database = new NewsDatabase(context);
+        drawerMenuManager = new DrawerMenuManager(context);
 
     }
 
@@ -87,7 +90,7 @@ public class FrontPageAdapter extends RecyclerView.Adapter<FrontPageAdapter.News
         holder.timeTextView.setText(news.getPublish_time());
         MainActivity activity = new MainActivity();
 //        String cat_name = activity.getCategoryNameById(news.getCat_id());
-        String cat_name = database.getAllDrawerCategoryName(news.getCat_id());
+        String cat_name = drawerMenuManager.getAllDrawerCategoryName(news.getCat_id());
         holder.cat_titleView.setText(cat_name);
     }
 

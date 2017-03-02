@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dailyasianage.android.Adpter.RecyclerAdapter;
+import com.dailyasianage.android.Database.FavoriteNewsManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.R;
 import com.dailyasianage.android.item.News;
@@ -29,6 +30,8 @@ public class FavoriteFragment extends Fragment {
     Context context;
     RecyclerAdapter recyclerAdapter;
 
+    FavoriteNewsManager favoriteNewsManager;
+
     public FavoriteFragment() {
         this.cat_id = 3;
     }
@@ -39,11 +42,16 @@ public class FavoriteFragment extends Fragment {
                              Bundle savedInstanceState) {
         Bundle bundle = this.getArguments();
         String myValue = bundle.getString("message");
+
         View view = inflater.inflate(R.layout.fragment_all_cat, container, false);
+
+        database = new NewsDatabase(getActivity());
+        favoriteNewsManager=new FavoriteNewsManager(getActivity());
+
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         progressBar = (ProgressBar) view.findViewById(R.id.loading_progressBar);
         cat_titleTextView = (TextView) view.findViewById(R.id.cat_titleTextView);
-        database = new NewsDatabase(getActivity());
+
         progressBar.setVisibility(View.GONE);
 
         GridLayoutManager manager = new GridLayoutManager(getContext(), 2, LinearLayoutManager.VERTICAL, false);
@@ -66,13 +74,13 @@ public class FavoriteFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        arrayList = database.getFav();
+        arrayList = favoriteNewsManager.getFav();
         recyclerAdapter = new RecyclerAdapter(getActivity(), arrayList);
         recyclerView.setAdapter(recyclerAdapter);
     }
 
     private void FavNews() {
-        arrayList = database.getFav();
+        arrayList = favoriteNewsManager.getFav();
         recyclerAdapter = new RecyclerAdapter(getActivity(), arrayList);
         recyclerView.setAdapter(recyclerAdapter);
     }

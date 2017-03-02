@@ -15,6 +15,8 @@ import android.widget.ProgressBar;
 import com.dailyasianage.android.Adpter.RecyclerAdapter;
 import com.dailyasianage.android.All_URL.UrlLink;
 import com.dailyasianage.android.ConnectionDetector;
+import com.dailyasianage.android.Database.AllNewsManager;
+import com.dailyasianage.android.Database.CategoryManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.R;
 import com.dailyasianage.android.item.News;
@@ -42,6 +44,9 @@ public class AllCatFragment extends Fragment {
     private boolean isTrue= false;
     private static boolean value= false;
 
+    CategoryManager categoryManager;
+    AllNewsManager allNewsManager;
+
 
     public AllCatFragment() {
     }
@@ -64,10 +69,14 @@ public class AllCatFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_all_cat, container, false);
         database = new NewsDatabase(getActivity());
+        detector = new ConnectionDetector(getContext());
+        allNewsManager=new AllNewsManager(getActivity());
+        categoryManager=new CategoryManager(getActivity());
+
         urlLink = new UrlLink();
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         progressBar = (ProgressBar) view.findViewById(R.id.loading_progressBar);
-        detector = new ConnectionDetector(getContext());
+
 
         isInternetConnection = detector.isConnectingToInternet();
         progressBar.setVisibility(View.VISIBLE);
@@ -88,11 +97,10 @@ public class AllCatFragment extends Fragment {
         recyclerView.setLayoutManager(manager);
         getCatNewsId();
 
-        if (isInternetConnection && isTrue == true) {
-//            Log.e("AllCatFragment.java", " value : "+isTrue);
+        if (isInternetConnection && isTrue) {
           callCatNews();
         } else {
-            newsIds = database.getCategoryNews(String.valueOf(cat_id));
+            newsIds = allNewsManager.getCategoryNews(String.valueOf(cat_id));
             recyclerAdapter = new RecyclerAdapter(getActivity(), newsIds);
             recyclerAdapter.notifyDataSetChanged();
             recyclerView.setAdapter(recyclerAdapter);
@@ -105,14 +113,14 @@ public class AllCatFragment extends Fragment {
     public void getCatNewsId() {
 
         try {
-            String catNews = database.getCatNews(String.valueOf(cat_id));
+            String catNews = categoryManager.getCatNews(String.valueOf(cat_id));
             JSONObject jsonObject = new JSONObject(catNews);
             String cat = jsonObject.getString("nid");
             JSONArray jsonArray = new JSONArray(cat);
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 cat_news_ids = jsonArray.getString(i);
-                isTrue = database.getNewsAllExist(jsonArray.getInt(i))== 0;
+                isTrue = allNewsManager.getNewsAllExist(jsonArray.getInt(i))== 0;
 
                 if (k == 0) {
                     final_cat_id += cat_news_ids;
