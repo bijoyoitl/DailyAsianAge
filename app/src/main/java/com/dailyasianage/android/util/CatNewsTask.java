@@ -1,6 +1,8 @@
 package com.dailyasianage.android.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -19,6 +21,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -40,6 +45,7 @@ public class CatNewsTask extends AsyncTask<String, String, String> {
     private ArrayList<News> newsAllArrayList;
     private int cat_id;
     private boolean value;
+    private byte[] img;
 
     private AllNewsManager allNewsManager;
     private CategoryManager categoryManager;
@@ -52,8 +58,8 @@ public class CatNewsTask extends AsyncTask<String, String, String> {
         this.idList = idList;
         this.cat_id = cat_id;
         database = new NewsDatabase(context);
-        allNewsManager=new AllNewsManager(context);
-        categoryManager=new CategoryManager(context);
+        allNewsManager = new AllNewsManager(context);
+        categoryManager = new CategoryManager(context);
     }
 
     public CatNewsTask(Context context, boolean value, RecyclerView recyclerView, String idList) {
@@ -62,8 +68,8 @@ public class CatNewsTask extends AsyncTask<String, String, String> {
         this.recyclerView = recyclerView;
         this.idList = idList;
         database = new NewsDatabase(context);
-        allNewsManager=new AllNewsManager(context);
-        categoryManager=new CategoryManager(context);
+        allNewsManager = new AllNewsManager(context);
+        categoryManager = new CategoryManager(context);
     }
 
 
@@ -108,10 +114,19 @@ public class CatNewsTask extends AsyncTask<String, String, String> {
 
                 String image = jsonObject.getString("image");
 
-                String imageLink = urlLink.imageLink;
+                String imageLink = UrlLink.imageLink + image;
+                URL url = null;
+                try {
+                    if (!image.equals("")) {
+                        url = new URL(imageLink);
+                        Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        img = Utils.getImageBytes(bitmap);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-
-                news = new News(catId, id, heading, sub_heading, shoulder, pub_time, reporter, details, imageLink + image, publish_serial, top_news, home_slider, inside_news);
+                news = new News(catId, id, heading, sub_heading, shoulder, pub_time, reporter, details, imageLink, publish_serial, top_news, home_slider, inside_news);
 
                 if (allNewsManager.getNewsExist(Integer.parseInt(id)) == 0) {
                     allNewsManager.addNews(news);
@@ -129,7 +144,7 @@ public class CatNewsTask extends AsyncTask<String, String, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         if (!value) {
-            AllCatFragment.progressBar.setVisibility(View.GONE);
+//            AllCatFragment.progressBar.setVisibility(View.GONE);
             newsArrayList = allNewsManager.getCategoryNews(String.valueOf(cat_id));
             recyclerAdapter = new RecyclerAdapter(context, newsArrayList);
             recyclerView.setAdapter(recyclerAdapter);

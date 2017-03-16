@@ -1,6 +1,6 @@
 package com.dailyasianage.android.Fragments;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,15 +23,9 @@ import com.dailyasianage.android.R;
 import com.dailyasianage.android.item.News;
 import com.dailyasianage.android.item.NewsAll;
 import com.dailyasianage.android.item.NewsMain;
-import com.dailyasianage.android.util.CatNewsTask;
-import com.google.gson.JsonObject;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.dailyasianage.android.util.CurrentData;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,11 +33,18 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class AllCatFragment extends Fragment {
+
+public class InitialNewsFragment extends Fragment {
+
+    String allNewsId = "";
+    NewsApis newsApis;
+    Retrofit retrofit;
+    String d = "";
+
+
     public int cat_id;
     private RecyclerView recyclerView;
-    ProgressBar progressBar2;
-    ProgressBar progressBar;
+    public static ProgressBar progressBar;
     private ConnectionDetector detector;
     private Boolean isInternetConnection = false;
     private NewsDatabase database;
@@ -55,28 +56,19 @@ public class AllCatFragment extends Fragment {
     public RecyclerAdapter recyclerAdapter;
     private boolean isTrue = false;
     private static boolean value = false;
+    Context context;
 
     CategoryManager categoryManager;
     AllNewsManager allNewsManager;
 
-    Retrofit retrofit;
-    NewsApis newsApis;
-    ArrayList<String> serverNewsId;
-    ArrayList<String> localNewsId;
-    String updateNewsIds = "";
 
-    public AllCatFragment() {
+    public InitialNewsFragment() {
+        // Required empty public constructor
     }
 
-    @SuppressLint("ValidFragment")
-    public AllCatFragment(int cat_id) {
-        super();
-        this.cat_id = cat_id;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
     }
 
@@ -84,24 +76,24 @@ public class AllCatFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_all_cat, container, false);
-        database = new NewsDatabase(getActivity());
-        detector = new ConnectionDetector(getContext());
-        allNewsManager = new AllNewsManager(getActivity());
-        categoryManager = new CategoryManager(getActivity());
-        serverNewsId = new ArrayList<>();
-        localNewsId = new ArrayList<>();
+        View view = inflater.inflate(R.layout.fragment_initaial_news, container, false);
+        this.context = getActivity();
+
+        database = new NewsDatabase(context);
+        detector = new ConnectionDetector(context);
+        isInternetConnection = detector.isConnectingToInternet();
+        allNewsManager = new AllNewsManager(context);
+        categoryManager = new CategoryManager(context);
 
         urlLink = new UrlLink();
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         progressBar = (ProgressBar) view.findViewById(R.id.loading_progressBar);
-        progressBar2 = (ProgressBar) view.findViewById(R.id.progressBar);
 
 
         isInternetConnection = detector.isConnectingToInternet();
         progressBar.setVisibility(View.VISIBLE);
 
-        GridLayoutManager manager = new GridLayoutManager(getContext(), 2, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager manager = new GridLayoutManager(context, 2, LinearLayoutManager.VERTICAL, false);
 
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() { //recycler position set
             @Override
@@ -116,16 +108,25 @@ public class AllCatFragment extends Fragment {
 
         recyclerView.setLayoutManager(manager);
 
+        allNewsId = CurrentData.initialNewsIds;
+
         if (isInternetConnection) {
-            newsIds = allNewsManager.getCategoryNews(String.valueOf(cat_id));
-            recyclerAdapter = new RecyclerAdapter(getActivity(), newsIds);
-            recyclerAdapter.notifyDataSetChanged();
-            recyclerView.setAdapter(recyclerAdapter);
-            progressBar.setVisibility(View.GONE);
-            getCatNewsId();
+            if (allNewsId.equals("")) {
+                newsIds = allNewsManager.getCategoryNews("1");
+                recyclerAdapter = new RecyclerAdapter(context, newsIds);
+                recyclerAdapter.notifyDataSetChanged();
+                recyclerView.setAdapter(recyclerAdapter);
+                progressBar.setVisibility(View.GONE);
+            } else {
+                newsIds = allNewsManager.getCategoryNews("1");
+                recyclerAdapter = new RecyclerAdapter(context, newsIds);
+                recyclerAdapter.notifyDataSetChanged();
+                recyclerView.setAdapter(recyclerAdapter);
+                getAllData();
+            }
         } else {
-            newsIds = allNewsManager.getCategoryNews(String.valueOf(cat_id));
-            recyclerAdapter = new RecyclerAdapter(getActivity(), newsIds);
+            newsIds = allNewsManager.getCategoryNews("1");
+            recyclerAdapter = new RecyclerAdapter(context, newsIds);
             recyclerAdapter.notifyDataSetChanged();
             recyclerView.setAdapter(recyclerAdapter);
             progressBar.setVisibility(View.GONE);
@@ -134,76 +135,12 @@ public class AllCatFragment extends Fragment {
         return view;
     }
 
-    public void getCatNewsId() {
-        progressBar2.setVisibility(View.VISIBLE);
-        String link = "app/?module=cat_news&cat=" + cat_id;
-        retrofit = new Retrofit.Builder().baseUrl(UrlLink.baseUrl).addConverterFactory(GsonConverterFactory.create()).build();
-        newsApis = retrofit.create(NewsApis.class);
-
-        Call<JsonObject> getSingleCatNewsIds = newsApis.getSingleCatNewsId(link);
-
-        getSingleCatNewsIds.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response.body() + "");
-
-                    String nid = jsonObject.getString("nid");
-                    JSONArray jsonArray = new JSONArray(nid);
-
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        String id = jsonArray.getString(i);
-//                        Log.e("ACAT", "server ids : " + id);
-                        serverNewsId.add(id);
-                    }
-                    String dbNewsIds = categoryManager.getCatNewsId(cat_id + "");
-//                    Log.e("ACAT", "db ids : " + dbNewsIds);
-                    String[] strValues = dbNewsIds.split(",");
-
-                    localNewsId = new ArrayList<String>(Arrays.asList(strValues));
-
-                    for (String id : serverNewsId) {
-                        if (!localNewsId.contains(id)) {
-                            if (updateNewsIds.equals("")) {
-                                updateNewsIds += id;
-                            } else {
-                                updateNewsIds += "," + id;
-                            }
-
-                        }
-                    }
-
-                    Log.e("ACAT", "update ids : " + updateNewsIds);
-
-                    if (!updateNewsIds.equals("")) {
-                        getAllData(updateNewsIds);
-                        categoryManager.addCatNews(cat_id + "", dbNewsIds + "," + updateNewsIds);
-                    }else {
-                        progressBar2.setVisibility(View.GONE);
-                    }
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-
-            }
-        });
-    }
-
-
-    private void getAllData(String newsId) {
-        Log.e("NA", String.valueOf(123));
+    private void getAllData() {
 
         retrofit = new Retrofit.Builder().baseUrl(UrlLink.baseUrl).addConverterFactory(GsonConverterFactory.create()).build();
         newsApis = retrofit.create(NewsApis.class);
 
-        String link = "/app/?module=news&n=" + newsId;
+        String link = "/app/?module=news&n=" + allNewsId;
         Call<NewsMain> newsMainCall = newsApis.getAllNews(link);
 
         newsMainCall.enqueue(new Callback<NewsMain>() {
@@ -211,12 +148,12 @@ public class AllCatFragment extends Fragment {
             public void onResponse(Call<NewsMain> call, Response<NewsMain> response) {
                 NewsMain newsMain = response.body();
 
+                Log.e("NA", String.valueOf(newsMain.getStatus()));
 
                 ArrayList<NewsAll> newsAlls = (ArrayList<NewsAll>) newsMain.getNews();
 
                 for (int i = 0; i < newsAlls.size(); i++) {
                     String id = newsAlls.get(i).getId();
-                    Log.e("NA", String.valueOf(id));
                     String catId = newsAlls.get(i).getCatId();
                     String shoulder = newsAlls.get(i).getShoulder();
                     String publishTime = newsAlls.get(i).getPublishTime();
@@ -230,6 +167,11 @@ public class AllCatFragment extends Fragment {
                     String details = newsAlls.get(i).getDetails();
                     String image = newsAlls.get(i).getImage();
 
+                    if (d.equals("")) {
+                        d += id;
+                    } else {
+                        d += "," + id;
+                    }
 
                     NewsAll newsAll = new NewsAll(id, catId, shoulder, publishTime, publishSerial, nTopNews, nHomeSlider, nInside, heading, subHeading, reporter, details, image);
 
@@ -239,23 +181,20 @@ public class AllCatFragment extends Fragment {
 
                 }
 
-                newsIds = allNewsManager.getCategoryNews(String.valueOf(cat_id));
-                recyclerAdapter = new RecyclerAdapter(getActivity(), newsIds);
+                Log.e(" arr cat : ", d);
+
+                newsIds = allNewsManager.getCategoryNews("1");
+                recyclerAdapter = new RecyclerAdapter(context, newsIds);
                 recyclerAdapter.notifyDataSetChanged();
                 recyclerView.setAdapter(recyclerAdapter);
-                progressBar2.setVisibility(View.GONE);
-
-
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<NewsMain> call, Throwable t) {
                 t.printStackTrace();
             }
-
         });
     }
 
 }
-
-

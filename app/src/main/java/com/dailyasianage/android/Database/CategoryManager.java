@@ -45,6 +45,41 @@ public class CategoryManager {
     }
 
     //get cat news ids from category table
+    public String getCatNewsId(String catIds) {
+        String catNewsIds = "";
+        try {
+            database = newsDatabase.getReadableDatabase();
+            String QUERY = "SELECT " + NewsDatabase.CATEGORY_NEWS_ID + " FROM " + NewsDatabase.CATEGORY_TABLE_NAME + " WHERE " + NewsDatabase.CATEGORY_ID + " in(" + catIds + ")";
+
+            Log.e("CA", "news query : " + QUERY);
+
+            cursor = database.rawQuery(QUERY, null);
+
+            if (!cursor.isLast()) {
+                while (cursor.moveToNext()) {
+                    String nesIds = cursor.getString(cursor.getColumnIndex(NewsDatabase.CATEGORY_NEWS_ID));
+
+                    if (catNewsIds.equals("")) {
+                        catNewsIds += nesIds;
+                    } else {
+                        catNewsIds += "," + nesIds;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (database.isOpen()) {
+                database.close();
+            }
+        }
+
+        Log.e("CM ", " cat n : " + catNewsIds);
+
+        return catNewsIds;
+    }
+
+    //get cat news ids from category table
     public String getCatNews(String catid) {
         String catnews = "";
         try {
@@ -73,7 +108,7 @@ public class CategoryManager {
 
     //clean category from category table
     public void cleanCatByID(String cat_id) {
-         database = newsDatabase.getWritableDatabase();
+        database = newsDatabase.getWritableDatabase();
         try {
             database.delete(NewsDatabase.CATEGORY_TABLE_NAME, NewsDatabase.CATEGORY_ID + "=?", new String[]{cat_id});
         } catch (Exception e) {

@@ -34,6 +34,7 @@ import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.Fragments.AllCatFragment;
 import com.dailyasianage.android.Fragments.FavoriteFragment;
 import com.dailyasianage.android.Fragments.FrontPageFragment;
+import com.dailyasianage.android.Fragments.InitialNewsFragment;
 import com.dailyasianage.android.ImageGallery.PhotoGalleryFragment;
 import com.dailyasianage.android.item.DbDrawerItem;
 import com.dailyasianage.android.item.News;
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 cat = heading.get(i).getCat_id();
                 cat_name = heading.get(i).getCat_name();
                 if (i == 0) {
-                    fragment2 = new FrontPageFragment();
+                    fragment2 = new InitialNewsFragment();
                     titleLayout.setVisibility(View.GONE);
                     if (fragment2 != null) {
                         fragmentManager = getSupportFragmentManager();
@@ -257,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (i == 0) {
-            fragment2 = new FrontPageFragment();
+            fragment2 = new InitialNewsFragment();
 //            titleLayout.setVisibility(View.GONE);
             if (fragment2 != null) {
                 fragmentManager = getSupportFragmentManager();
@@ -313,184 +314,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class AutoRefreshAsyncTask extends AsyncTask<String, String, String> {
-        private NewsDatabase database;
-        private Context context;
-        private RecyclerView nidGridView;
-        private JSONObject jsonObject;
-        private JSONArray jsonArray;
-        private JSONArray array;
-        String catNewsId;
-        private News news;
-        int l = 0;
-        String idList = "";
-        String catnews = "";
-        String[] catID = {"1", "2", "3"};
-        String f = "";
-        ArrayList nId = new ArrayList();
-        String result;
-        private String LOG = "JsonForNid.java";
-        String p = "";
-        UrlLink urlLink = new UrlLink();
-        int k = 0;
-        int id;
-        String tempNewsIds = "";
-
-        public AutoRefreshAsyncTask(Context context) {
-            this.context = context;
-            database = new NewsDatabase(context);
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            int i;
-            String catIdString = "";
-            for (i = 0; i < catID.length; i++) {
-                if (i == 0) {
-                    catIdString += catID[i];
-                } else {
-                    catIdString += "," + catID[i];
-                }
-            }
-
-
-            String response = new HTTPGET().SendHttpRequest(urlLink.multiCategory + catIdString);
-            Log.e("MainActivity.java", " cat 365 : " + catIdString);
-            try {
-                jsonObject = new JSONObject(response);
-                catnews = jsonObject.getString("cat");
-                jsonObject = new JSONObject(catnews);
-                Log.e(LOG, "category = " + catnews);
-                Iterator<String> iter = jsonObject.keys();
-                while (iter.hasNext()) {
-                    String key = iter.next();
-//                        Log.e(LOG, "key "+key);
-                    try {
-                        catnews = jsonObject.getString(key);
-//                        if (isInternetConnection) {
-                        categoryManager.cleanCatByID(key);
-                        categoryManager.addCatNews(String.valueOf(key), catnews);
-                    } catch (JSONException e) {
-                        // Something went wrong!
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                JSONArray allNewsId;
-
-                JSONObject dbobject;
-                int catRun = 0;
-                for (i = 0; i < catID.length; i++) {
-                    String dbArray = categoryManager.getCatNews(String.valueOf(catID[i]));
-//                    Log.e(LOG, "cat Id = " + catID[i]);
-                    dbobject = new JSONObject(dbArray);
-                    catnews = dbobject.getString("nid");
-                    array = new JSONArray(catnews);
-                    if (array.length() > 0) {
-                        for (int xyz = 0; xyz < array.length(); xyz++) {
-                            if (tempNewsIds == "") {
-                                tempNewsIds += array.getString(xyz);
-                            } else {
-                                tempNewsIds += "," + array.getString(xyz);
-                            }
-
-                        }
-                    }
-
-//                      Log.e(LOG, "all news id  = " + tempNewsIds);
-                }
-                allNewsId = new JSONArray("[" + tempNewsIds + "]");
-                l = 0;
-                for (i = 0; i < allNewsId.length(); i++) {
-                    //jsonObject= jsonArray.getJSONArray(i);
-
-                    catNewsId = String.valueOf(allNewsId.getString(i));
-
-                    Log.e(LOG, "Db Values = " + catNewsId);
-                    if (f.equals("")) {
-                        f += catNewsId;
-                    } else {
-                        f += ',' + catNewsId;
-                    }
-                    id = Integer.parseInt(allNewsId.getString(i));
-                    if (allNewsManager.getNewsExist(id) == 0) {
-                        //  Log.e(LOG, "New News = " + id);
-                        nId.add(id);
-                    }
-
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            if (nId.size() > 1) {
-
-                l = 0;
-                for (Object ni : nId) {
-
-                    String j = String.valueOf(ni);
-                    if (l == 0) {
-                        idList += j;
-                    } else {
-                        idList += ',' + j;
-                    }
-                }
-                l++;
-            }
-            Log.e(LOG, "Id List = " + idList);
-            result = new HTTPGET().SendHttpRequest(urlLink.newsIdLink + idList);
-            try {
-//                    Log.e(LOG, "return " + result);
-                jsonObject = new JSONObject(result);
-                jsonArray = new JSONArray(jsonObject.getString("news"));
-
-                for (i = 0; i < jsonArray.length(); i++) {
-                    //  Log.e(LOG, "r " + i);
-                    k = 1;
-                    jsonObject = jsonArray.getJSONObject(i);
-                    String catId = jsonObject.getString("cat_id");
-                    String id = jsonObject.getString("id");
-                    String heading = jsonObject.getString("heading");
-                    String sub_heading;
-                    if (jsonObject.isNull("sub_heading")) {
-                        sub_heading = null;
-                    } else {
-                        sub_heading = jsonObject.getString("sub_heading");
-                    }
-                    String shoulder = jsonObject.getString("shoulder");
-                    String pub_time = jsonObject.getString("publish_time");
-
-                    int publish_serial = jsonObject.getInt("publish_serial");
-                    int top_news = jsonObject.getInt("n_top_news");
-                    int home_slider = jsonObject.getInt("n_home_slider");
-                    int inside_news = jsonObject.getInt("n_inside_news");
-                    String reporter;
-                    if (jsonObject.isNull("reporter")) {
-                        reporter = null;
-                    } else {
-                        reporter = jsonObject.getString("reporter");
-                    }
-                    String details = jsonObject.getString("details");
-                    String image = jsonObject.getString("image");
-                    String imageLink = urlLink.imageLink;
-
-                    news = new News(catId, id, heading, sub_heading, shoulder, pub_time, reporter, details, imageLink + image, publish_serial, top_news, home_slider, inside_news);
-                    allNewsManager.addNews(news);
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-
-
-            }
-
-
-            return result;
-        }
-
-
-    }
 }

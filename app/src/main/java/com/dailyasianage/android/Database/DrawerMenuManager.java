@@ -100,6 +100,34 @@ public class DrawerMenuManager {
 
         return itemArrayList;
     }
+    public ArrayList<DbDrawerItem> getDrawerCatId() {
+        ArrayList<DbDrawerItem> itemArrayList = null;
+
+        try {
+            itemArrayList = new ArrayList<DbDrawerItem>();
+            database = newsDatabase.getReadableDatabase();
+            cursor = database.query(NewsDatabase.DRAWER_TABLE_NAME, null, null, null, null, null, "CAST(" + NewsDatabase.DRAWER_CAT_ID + " AS INTEGER) asc");
+
+            if (!cursor.isLast()) {
+                while (cursor.moveToNext()) {
+                    DbDrawerItem item = new DbDrawerItem();
+                    item.setCat_id(cursor.getString(cursor.getColumnIndex(NewsDatabase.DRAWER_CAT_ID)));
+                    item.setCat_name(cursor.getString(cursor.getColumnIndex(NewsDatabase.DRAWER_CAT_NAME)));
+                    item.setCat_imag(cursor.getString(cursor.getColumnIndex(NewsDatabase.DRAWER_CAT_IMAGE)));
+                    itemArrayList.add(item);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (database.isOpen()) {
+                database.close();
+            }
+            cursor.close();
+        }
+
+        return itemArrayList;
+    }
 
     // /get all parent from drawer_list table for nav items..
     public ArrayList<DbDrawerItem> getAllParentInfo() {
@@ -271,6 +299,19 @@ public class DrawerMenuManager {
         }
         return "0";
 
+    }
+
+    public void deleteOldCategory(String catIds) {
+        try {
+            database = newsDatabase.getWritableDatabase();
+            database.delete(NewsDatabase.DRAWER_TABLE_NAME, NewsDatabase.DRAWER_CAT_ID + " not in(" + catIds + ")", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (database.isOpen()) {
+                database.close();
+            }
+        }
     }
 
 

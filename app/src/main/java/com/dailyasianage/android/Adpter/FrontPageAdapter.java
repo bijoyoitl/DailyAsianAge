@@ -2,6 +2,7 @@ package com.dailyasianage.android.Adpter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.dailyasianage.android.DetailsActivity;
 import com.dailyasianage.android.MainActivity;
 import com.dailyasianage.android.R;
 import com.dailyasianage.android.item.News;
+import com.dailyasianage.android.util.Utils;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -80,11 +82,15 @@ public class FrontPageAdapter extends RecyclerView.Adapter<FrontPageAdapter.News
         details = details.replace("\n", "").replace("\r", "");
         holder.details.setText(details);
 
-        Picasso.with(context)
-                .load(arrayList.get(position).getImage())
-                .placeholder(R.drawable.dummy)
-                .error(R.drawable.dummy_l)
-                .into(holder.imageView);
+//        Picasso.with(context)
+//                .load(arrayList.get(position).getImage())
+//                .placeholder(R.drawable.dummy)
+//                .error(R.drawable.dummy_l)
+//                .into(holder.imageView);
+
+//        byte[] img = arrayList.get(position).getImage();
+//        Bitmap bitmap = Utils.getImage(img);
+//        holder.imageView.setImageBitmap(bitmap);
 
 
         holder.timeTextView.setText(news.getPublish_time());

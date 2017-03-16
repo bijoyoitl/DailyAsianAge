@@ -169,6 +169,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                                 drawerMenuManager.updateDrawerList(item,catId);
                             }
 
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -181,7 +182,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                         }
                     }
 
-                    Log.e("Splash.java", " cat id : " + allcat);
+//                    Log.e("Splash.java", " cat id : " + allcat);
 
                     String request = new HTTPGET().SendHttpRequest(urlLink.multiCategory + allcat);
                     try {
@@ -193,6 +194,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                             String key = iter.next();
                             try {
                                 cat_news = jsonObject.getString(key);
+                                Log.e("SP","cat news id : "+cat_news);
 
                                 ArrayList<String> server_news_id_arrayList = new ArrayList<String>();
                                 ArrayList<String> local_id_arrayList = new ArrayList<String>();
@@ -259,9 +261,6 @@ public class SplashScreenActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-
-
-
 
             Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

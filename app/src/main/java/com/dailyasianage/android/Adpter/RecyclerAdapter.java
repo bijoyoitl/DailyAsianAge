@@ -2,6 +2,8 @@ package com.dailyasianage.android.Adpter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -11,11 +13,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
+import com.dailyasianage.android.All_URL.UrlLink;
 import com.dailyasianage.android.DetailsActivity;
 import com.dailyasianage.android.R;
 import com.dailyasianage.android.item.News;
+import com.dailyasianage.android.item.NewsAll;
+import com.dailyasianage.android.util.Utils;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.DisplayImageOptions.Builder;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -25,15 +33,16 @@ import java.util.ArrayList;
  */
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.NewsViewHolder> {
     private Context context;
-    ArrayList<News> arrayList = new ArrayList<News>();
-    private ImageLoader imageLoader;
+    private ArrayList<News> arrayList = new ArrayList<News>();
+    private ImageLoader loader;
+    private DisplayImageOptions options;
 
 
     public RecyclerAdapter(Context context, ArrayList<News> arrayList) {
-        Log.e("RecyclerAdapter.java", " array in recyclerView.");
+        this.loader = ImageLoader.getInstance();
         this.context = context;
         this.arrayList = arrayList;
-
+        initOptions();
     }
 
     public RecyclerAdapter() {
@@ -76,28 +85,27 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.NewsVi
         details = details.replace("\n", "").replace("\r", "");
         holder.details.setText(details);
 
-        Picasso.with(context)
-                .load(arrayList.get(position).getImage())
-                .placeholder(R.drawable.dummy)
-                .error(R.drawable.dummy_l)
-                .into(holder.imageView);
-//        Glide.with(context)
+//        Picasso.with(context)
 //                .load(arrayList.get(position).getImage())
-//                .thumbnail(0.5f)
-//                .dontAnimate()
 //                .placeholder(R.drawable.dummy)
 //                .error(R.drawable.dummy_l)
-//                .diskCacheStrategy(DiskCacheStrategy.ALL)
 //                .into(holder.imageView);
-//        imageLoader = AppController.getInstance(context).getImageLoader();
-//        imageLoader.get(news.getImage(), ImageLoader.getImageListener(holder.networkImageView, R.drawable.dummy, R.drawable.dummy_l));
-//
-//        holder.networkImageView.setImageUrl(news.getImage(),imageLoader);
+        if (arrayList.get(position).getImage().equals("")) {
+            String img = "";
+            this.loader.displayImage(img, holder.imageView, this.options);
+        }else {
+            String img = UrlLink.imageLink + arrayList.get(position).getImage();
+            this.loader.displayImage(img, holder.imageView, this.options);
+        }
+
         holder.timeTextView.setText(news.getPublish_time());
         holder.titleTextView.setText(news.getCat_id());
 
 
+
+
     }
+
 
     @Override
     public int getItemCount() {
@@ -112,11 +120,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.NewsVi
         private ImageView imageView;
         private TextView timeTextView;
         private TextView titleTextView;
-        private NetworkImageView networkImageView;
 
 
         Context context;
         ArrayList<News> arrayList = new ArrayList<News>();
+
+
 
         public NewsViewHolder(View itemView) {
             super(itemView);
@@ -133,8 +142,18 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.NewsVi
             imageView = (ImageView) itemView.findViewById(R.id.cardImageView);
             timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
             titleTextView = (TextView) itemView.findViewById(R.id.cat_titleTextView);
-        
+/*
+            String d="";
+            for (News newsAll:arrayList){
+                String i= newsAll.getId();
 
+                if (d.equals("")){
+                    d+=i;
+                }else {
+                    d+=","+i;
+                }
+            }
+            Log.e("final cat : ",d);*/
 
         }
 
@@ -168,6 +187,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.NewsVi
     public void swapItems(ArrayList<News> update) {
         this.arrayList = update;
         notifyDataSetChanged();
+    }
+
+    private void initOptions() {
+        this.loader.init(getConfiguration());
+        this.options = new Builder().showImageOnLoading(R.drawable.loadingicon).showImageForEmptyUri( R.drawable.dummy).showImageOnFail( R.drawable.dummy).resetViewBeforeLoading(false).cacheInMemory(true).cacheOnDisk(true).build();
+    }
+
+    private ImageLoaderConfiguration getConfiguration() {
+        return new ImageLoaderConfiguration.Builder(this.context).diskCacheExtraOptions(480, 800, null).denyCacheImageMultipleSizesInMemory().memoryCache(new LruMemoryCache(AccessibilityNodeInfoCompat.ACTION_SET_TEXT)).memoryCacheSize(AccessibilityNodeInfoCompat.ACTION_SET_TEXT).diskCacheSize(52428800).build();
     }
 }
 

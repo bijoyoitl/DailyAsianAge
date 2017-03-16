@@ -151,7 +151,7 @@ public class FrontPageFragment extends Fragment {
             recyclerView.setAdapter(new RecyclerAdapter(getActivity(), newsIds));
         }
 
-        if (delete == true) {
+        if (delete) {
             allNewsManager.deleteOldNews(tempNewsIds);
         }
 

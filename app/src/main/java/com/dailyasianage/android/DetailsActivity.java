@@ -2,10 +2,12 @@ package com.dailyasianage.android;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -26,11 +28,17 @@ import android.widget.Toast;
 
 import com.dailyasianage.android.Adpter.RecyclerAdapter;
 import com.dailyasianage.android.Adpter.RelatedNewsAdapter;
+import com.dailyasianage.android.All_URL.UrlLink;
 import com.dailyasianage.android.Database.AllNewsManager;
 import com.dailyasianage.android.Database.FavoriteNewsManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.ImageGallery.SlideshowDialogFragment;
 import com.dailyasianage.android.item.News;
+import com.dailyasianage.android.util.Utils;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -73,6 +81,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     AllNewsManager allNewsManager;
     FavoriteNewsManager favoriteNewsManager;
 
+    private ImageLoader loader;
+    private DisplayImageOptions options;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,9 +94,12 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         this.context = this;
 
         newsDatabase = new NewsDatabase(context);
-        allNewsManager=new AllNewsManager(context);
-        favoriteNewsManager=new FavoriteNewsManager(context);
+        allNewsManager = new AllNewsManager(context);
+        favoriteNewsManager = new FavoriteNewsManager(context);
         recyclerAdapter = new RecyclerAdapter();
+
+        this.loader = ImageLoader.getInstance();
+        initOptions();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         d_ImageView = (ImageView) findViewById(R.id.d_imageView);
@@ -124,9 +138,17 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         cat_id = Integer.parseInt(getIntent().getStringExtra("catid"));
         catId = getIntent().getStringExtra("catid");
 
-        Picasso.with(context)
-                .load(getIntent().getStringExtra("image"))
-                .into(d_ImageView);
+//        Picasso.with(context)
+//                .load(getIntent().getStringExtra("image"))
+//                .into(d_ImageView);
+
+        if (getIntent().getStringExtra("image").equals("")) {
+            String img = "";
+            this.loader.displayImage(img, d_ImageView, this.options);
+        } else {
+            String img = UrlLink.imageLink + getIntent().getStringExtra("image");
+            this.loader.displayImage(img, d_ImageView, this.options);
+        }
 
         String fontSIze = newsDatabase.getFontSize(); //get front size from server and set into fonSize variable.
         int detailsTextSize = Integer.parseInt(fontSIze);
@@ -182,21 +204,19 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    private void initOptions() {
+        this.loader.init(getConfiguration());
+        this.options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.loadingicon).showImageForEmptyUri(R.drawable.dummy).showImageOnFail(R.drawable.dummy).resetViewBeforeLoading(false).cacheInMemory(true).cacheOnDisk(true).build();
+    }
+
+    private ImageLoaderConfiguration getConfiguration() {
+        return new ImageLoaderConfiguration.Builder(this.context).diskCacheExtraOptions(480, 800, null).denyCacheImageMultipleSizesInMemory().memoryCache(new LruMemoryCache(AccessibilityNodeInfoCompat.ACTION_SET_TEXT)).memoryCacheSize(AccessibilityNodeInfoCompat.ACTION_SET_TEXT).diskCacheSize(52428800).build();
+    }
+
     private void RelatedNews() {
         newsIds = allNewsManager.getRelatedNews(catId, nid);
         recyclerView.setAdapter(new RelatedNewsAdapter(context, newsIds));
 
-    }
-
-    private void showImage() {
-        String uri = "http://dailyasianage.com/images/cat_icon/asia.png";
-
-        // int imageResource = R.drawable.icon;
-        int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-
-        ImageView imageView = (ImageView) findViewById(R.id.iconImageView);
-        Drawable image = getResources().getDrawable(imageResource);
-        imageView.setImageDrawable(image);
     }
 
     @Override

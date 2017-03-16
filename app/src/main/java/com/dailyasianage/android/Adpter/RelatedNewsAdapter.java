@@ -3,6 +3,8 @@ package com.dailyasianage.android.Adpter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -11,10 +13,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.dailyasianage.android.All_URL.UrlLink;
 import com.dailyasianage.android.DetailsActivity;
 import com.dailyasianage.android.MainActivity;
 import com.dailyasianage.android.R;
 import com.dailyasianage.android.item.News;
+import com.dailyasianage.android.util.Utils;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -22,14 +30,17 @@ import java.util.ArrayList;
 /**
  * Created by optimal on 25-Jul-16.
  */
-public class RelatedNewsAdapter extends RecyclerView.Adapter<RelatedNewsAdapter.ViewHolder>{
-    Context context;
-    ArrayList<News> arrayList = new ArrayList<News>();
-
+public class RelatedNewsAdapter extends RecyclerView.Adapter<RelatedNewsAdapter.ViewHolder> {
+    private Context context;
+    private ArrayList<News> arrayList = new ArrayList<News>();
+    private ImageLoader loader;
+    private DisplayImageOptions options;
 
     public RelatedNewsAdapter(Context context, ArrayList<News> arrayList) {
+        this.loader = ImageLoader.getInstance();
         this.context = context;
         this.arrayList = arrayList;
+        initOptions();
     }
 
     public RelatedNewsAdapter() {
@@ -53,12 +64,19 @@ public class RelatedNewsAdapter extends RecyclerView.Adapter<RelatedNewsAdapter.
         details = details.replace("\n", "").replace("\r", "");
         holder.details.setText(details);
 
-        Picasso.with(context)
-                .load(arrayList.get(position).getImage())
-                .placeholder(R.drawable.dummy)
-                .error(R.drawable.dummy_l)
-                .into(holder.imageView);
+//        Picasso.with(context)
+//                .load(arrayList.get(position).getImage())
+//                .placeholder(R.drawable.dummy)
+//                .error(R.drawable.dummy_l)
+//                .into(holder.imageView);
 
+        if (arrayList.get(position).getImage().equals("")) {
+            String img = "";
+            this.loader.displayImage(img, holder.imageView, this.options);
+        } else {
+            String img = UrlLink.imageLink + arrayList.get(position).getImage();
+            this.loader.displayImage(img, holder.imageView, this.options);
+        }
 
         holder.timeTextView.setText(news.getPublish_time());
 
@@ -70,51 +88,60 @@ public class RelatedNewsAdapter extends RecyclerView.Adapter<RelatedNewsAdapter.
         return arrayList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    public TextView heading;
-    private TextView details;
-    private ImageView imageView;
-    private TextView timeTextView;
-    private TextView titleTextView;
+        public TextView heading;
+        private TextView details;
+        private ImageView imageView;
+        private TextView timeTextView;
+        private TextView titleTextView;
 
-    Context context;
-    ArrayList<News> arrayList = new ArrayList<News>();
+        Context context;
+        ArrayList<News> arrayList = new ArrayList<News>();
 
-    public ViewHolder(View itemView) {
-        super(itemView);
+        public ViewHolder(View itemView) {
+            super(itemView);
+        }
+
+        public ViewHolder(View itemView, Context context, ArrayList<News> arrayList) {
+            super(itemView);
+            this.context = context;
+            this.arrayList = arrayList;
+            itemView.setOnClickListener(this);
+
+            heading = (TextView) itemView.findViewById(R.id.headingTextView);
+            details = (TextView) itemView.findViewById(R.id.detailsTextView);
+            imageView = (ImageView) itemView.findViewById(R.id.cardImageView);
+            timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
+            titleTextView = (TextView) itemView.findViewById(R.id.cat_titleTextView);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+
+            News item = this.arrayList.get(position);
+            Intent intent = new Intent(context, DetailsActivity.class);
+            intent.putExtra("id", item.getId());
+            intent.putExtra("catid", item.getCat_id());
+            intent.putExtra("heading", item.getHeading());
+            intent.putExtra("details", item.getDetails());
+            intent.putExtra("image", arrayList.get(position).getImage());
+            intent.putExtra("time", item.getPublish_time());
+            intent.putExtra("reporter", item.getReporter());
+            intent.putExtra("subheading", item.getSub_heading());
+            intent.putExtra("shoulder", item.getShoulder());
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            this.context.startActivity(intent);
+        }
     }
 
-    public ViewHolder(View itemView, Context context, ArrayList<News> arrayList) {
-        super(itemView);
-        this.context = context;
-        this.arrayList = arrayList;
-        itemView.setOnClickListener(this);
-
-        heading = (TextView) itemView.findViewById(R.id.headingTextView);
-        details = (TextView) itemView.findViewById(R.id.detailsTextView);
-        imageView = (ImageView) itemView.findViewById(R.id.cardImageView);
-        timeTextView = (TextView) itemView.findViewById(R.id.timeTextView);
-        titleTextView = (TextView) itemView.findViewById(R.id.cat_titleTextView);
+    private void initOptions() {
+        this.loader.init(getConfiguration());
+        this.options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.loadingicon).showImageForEmptyUri(R.drawable.dummy).showImageOnFail(R.drawable.dummy).resetViewBeforeLoading(false).cacheInMemory(true).cacheOnDisk(true).build();
     }
 
-    @Override
-    public void onClick(View view) {
-        int position = getAdapterPosition();
-
-        News item = this.arrayList.get(position);
-        Intent intent = new Intent(context, DetailsActivity.class);
-        intent.putExtra("id", item.getId());
-        intent.putExtra("catid", item.getCat_id());
-        intent.putExtra("heading", item.getHeading());
-        intent.putExtra("details", item.getDetails());
-        intent.putExtra("image", arrayList.get(position).getImage());
-        intent.putExtra("time", item.getPublish_time());
-        intent.putExtra("reporter", item.getReporter());
-        intent.putExtra("subheading", item.getSub_heading());
-        intent.putExtra("shoulder", item.getShoulder());
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        this.context.startActivity(intent);
+    private ImageLoaderConfiguration getConfiguration() {
+        return new ImageLoaderConfiguration.Builder(this.context).diskCacheExtraOptions(480, 800, null).denyCacheImageMultipleSizesInMemory().memoryCache(new LruMemoryCache(AccessibilityNodeInfoCompat.ACTION_SET_TEXT)).memoryCacheSize(AccessibilityNodeInfoCompat.ACTION_SET_TEXT).diskCacheSize(52428800).build();
     }
-}
 }
