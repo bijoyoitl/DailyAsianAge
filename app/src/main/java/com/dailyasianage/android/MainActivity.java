@@ -5,18 +5,14 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
@@ -26,27 +22,17 @@ import android.widget.Toast;
 
 
 import com.dailyasianage.android.Adpter.ExAdapter;
-import com.dailyasianage.android.All_URL.UrlLink;
 import com.dailyasianage.android.Database.AllNewsManager;
 import com.dailyasianage.android.Database.CategoryManager;
 import com.dailyasianage.android.Database.DrawerMenuManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.Fragments.AllCatFragment;
 import com.dailyasianage.android.Fragments.FavoriteFragment;
-import com.dailyasianage.android.Fragments.FrontPageFragment;
 import com.dailyasianage.android.Fragments.InitialNewsFragment;
 import com.dailyasianage.android.ImageGallery.PhotoGalleryFragment;
 import com.dailyasianage.android.item.DbDrawerItem;
-import com.dailyasianage.android.item.News;
-import com.dailyasianage.android.util.HTTPGET;
-import com.google.firebase.crash.FirebaseCrash;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -117,15 +103,15 @@ public class MainActivity extends AppCompatActivity {
             public boolean onGroupClick(ExpandableListView expandableListView, View view, int i, long l) {
                 cat = heading.get(i).getCat_id();
                 cat_name = heading.get(i).getCat_name();
-                if (i == 0) {
-                    fragment2 = new InitialNewsFragment();
-                    titleLayout.setVisibility(View.GONE);
-                    if (fragment2 != null) {
-                        fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.contentF, fragment2).commit();
-                        drawer_layout.closeDrawer(navigationView);
-                    }
-                }
+//                if (i == 0) {
+//                    fragment2 = new InitialNewsFragment();
+//                    titleLayout.setVisibility(View.GONE);
+//                    if (fragment2 != null) {
+//                        fragmentManager = getSupportFragmentManager();
+//                        fragmentManager.beginTransaction().replace(R.id.contentF, fragment2).commit();
+//                        drawer_layout.closeDrawer(navigationView);
+//                    }
+//                }
 
                 if (adapter.getChildrenCount(i) == 0) {
                     childs = drawerMenuManager.getAllChildInfo(cat);
@@ -299,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
             builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    getActivity().finish();
+                    System.exit(0);
                 }
             });
 

@@ -1,3 +1,4 @@
+/*
 package com.dailyasianage.android.util;
 
 import android.content.Context;
@@ -7,14 +8,11 @@ import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.dailyasianage.android.Adpter.FrontPageAdapter;
 import com.dailyasianage.android.Adpter.RecyclerAdapter;
 import com.dailyasianage.android.All_URL.UrlLink;
 import com.dailyasianage.android.Database.AllNewsManager;
 import com.dailyasianage.android.Database.CategoryManager;
 import com.dailyasianage.android.Database.NewsDatabase;
-import com.dailyasianage.android.Fragments.AllCatFragment;
-import com.dailyasianage.android.Fragments.FrontPageFragment;
 import com.dailyasianage.android.item.News;
 
 import org.json.JSONArray;
@@ -22,13 +20,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+*/
 /**
  * Created by Bijoy on 10/6/2016.
- */
+ *//*
+
 
 public class CatNewsTask extends AsyncTask<String, String, String> {
     private Context context;
@@ -159,3 +158,4 @@ public class CatNewsTask extends AsyncTask<String, String, String> {
 
     }
 }
+*/

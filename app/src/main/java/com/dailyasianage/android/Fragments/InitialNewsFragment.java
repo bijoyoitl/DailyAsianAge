@@ -20,7 +20,6 @@ import com.dailyasianage.android.Database.CategoryManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.NewsApis;
 import com.dailyasianage.android.R;
-import com.dailyasianage.android.item.News;
 import com.dailyasianage.android.item.NewsAll;
 import com.dailyasianage.android.item.NewsMain;
 import com.dailyasianage.android.util.CurrentData;
@@ -52,7 +51,7 @@ public class InitialNewsFragment extends Fragment {
     private String cat_news_ids;
     private String final_cat_id = "";
     private int k;
-    public ArrayList<News> newsIds = new ArrayList<>();
+    public ArrayList<NewsAll> newsIds = new ArrayList<>();
     public RecyclerAdapter recyclerAdapter;
     private boolean isTrue = false;
     private static boolean value = false;
@@ -167,12 +166,6 @@ public class InitialNewsFragment extends Fragment {
                     String details = newsAlls.get(i).getDetails();
                     String image = newsAlls.get(i).getImage();
 
-                    if (d.equals("")) {
-                        d += id;
-                    } else {
-                        d += "," + id;
-                    }
-
                     NewsAll newsAll = new NewsAll(id, catId, shoulder, publishTime, publishSerial, nTopNews, nHomeSlider, nInside, heading, subHeading, reporter, details, image);
 
                     if (allNewsManager.getNewsExist(Integer.parseInt(id)) == 0) {
@@ -181,7 +174,6 @@ public class InitialNewsFragment extends Fragment {
 
                 }
 
-                Log.e(" arr cat : ", d);
 
                 newsIds = allNewsManager.getCategoryNews("1");
                 recyclerAdapter = new RecyclerAdapter(context, newsIds);

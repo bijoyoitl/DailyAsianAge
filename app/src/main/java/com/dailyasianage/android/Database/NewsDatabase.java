@@ -7,11 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.dailyasianage.android.item.DbDrawerItem;
-import com.dailyasianage.android.item.News;
-
-import org.json.JSONArray;
-
 import java.util.ArrayList;
 
 /**
@@ -98,7 +93,7 @@ public class NewsDatabase extends SQLiteOpenHelper {
     private static final String REQUEST_TIME = "CREATE TABLE " + REQUEST_TIME_TABLE_NAME + "(" + ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + REQUEST_TIME_CAT_ID + " INTEGER NOT NULL, " + LAST_REQUEST_TIME_VALUE + " VARCHAR NOT NULL);";
 
 
-    String fontSize = "insert into " + "settings" + " (" + "key" + ", " + "value" + ") values('font_size', '18');";
+    String fontSize = "insert into " + "settings" + " (" + "key" + ", " + "value" + ") values('font_size', '60');";
     String radioSelector = "insert into " + "settings" + " (" + "key" + ", " + "value" + ") values('position', '1');";
     String fontLevel = "insert into " + "settings" + " (" + "key" + ", " + "value" + ") values('font_level', 'Normal');";
     String single_cat_server_request = "insert into " + "settings" + " (" + "key" + ", " + "value" + ") values('last_request', '00000');";

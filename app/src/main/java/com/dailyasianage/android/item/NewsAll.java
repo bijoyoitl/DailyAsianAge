@@ -49,6 +49,9 @@ public class NewsAll {
     @Expose
     private String image;
 
+    public NewsAll() {
+    }
+
     public NewsAll(String id, String catId, String shoulder, String publishTime, String publishSerial, String nTopNews, String nHomeSlider, String nInsideNews, String heading, String subHeading, String reporter, String details, String image) {
         this.id = id;
         this.catId = catId;

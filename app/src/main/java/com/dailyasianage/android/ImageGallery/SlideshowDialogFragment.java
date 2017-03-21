@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -108,7 +109,7 @@ public class SlideshowDialogFragment extends DialogFragment {
 
     //	adapter
     public class MyViewPagerAdapter extends PagerAdapter {
-        TouchImageView imageViewPreview;
+        ImageView imageViewPreview;
         private Matrix matrix = new Matrix();
         private float scale = 1f;
         private ScaleGestureDetector SGD;
@@ -124,7 +125,7 @@ public class SlideshowDialogFragment extends DialogFragment {
             View view = layoutInflater.inflate(R.layout.image_fullscreen_preview, container, false);
 
 //            TouchImageView imageViewPreview = (TouchImageView) view.findViewById(R.id.image_preview);
-            imageViewPreview = (TouchImageView) view.findViewById(R.id.image_preview);
+            imageViewPreview = (ImageView) view.findViewById(R.id.image_preview);
             SGD = new ScaleGestureDetector(getActivity(), new ScaleListener());
             Model image = images.get(position);
 

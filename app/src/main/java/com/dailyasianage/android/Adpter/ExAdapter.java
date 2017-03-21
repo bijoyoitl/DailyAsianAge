@@ -40,7 +40,7 @@ public class ExAdapter extends BaseExpandableListAdapter {
     private Context context;
     private ArrayList<DbDrawerItem> header;
     private ArrayList<DbDrawerItem> child;
-    SparseArray<List<DbDrawerItem>> listChild = new SparseArray<List<DbDrawerItem>>();
+    private SparseArray<List<DbDrawerItem>> listChild = new SparseArray<List<DbDrawerItem>>();
     private ImageLoader loader;
     private DisplayImageOptions options;
 
@@ -119,12 +119,6 @@ public class ExAdapter extends BaseExpandableListAdapter {
 
         String cat_name = header.get(i).getCat_name();
 
-//        Picasso.with(context)
-//                .load(header.get(i).getCat_imag())
-//                .error(R.mipmap.apps_logo)
-//                .placeholder(R.mipmap.apps_logo)
-//                .into(imageView);
-
         if (header.get(i).getCat_imag().equals("")) {
             String img = "";
             this.loader.displayImage(img, imageView, this.options);
@@ -132,16 +126,6 @@ public class ExAdapter extends BaseExpandableListAdapter {
             String img = UrlLink.catImageLink + header.get(i).getCat_imag();
             this.loader.displayImage(img, imageView, this.options);
         }
-
-
-//        if (cat_name.equals("Home")) {
-//            Picasso.with(context)
-//                    .load(R.drawable.home_icon)
-//                    .error(R.mipmap.apps_logo)
-//                    .placeholder(R.mipmap.apps_logo)
-//                    .into(imageView);
-//
-//        }
 
         TextView listTextView = (TextView) view.findViewById(R.id.listTextView);
         listTextView.setText(header.get(i).getCat_name());
@@ -159,12 +143,7 @@ public class ExAdapter extends BaseExpandableListAdapter {
 
         }
         ImageView imageView = (ImageView) view.findViewById(R.id.iconImageView);
-//        Picasso.with(context)
-//                .load(listChild.get(i).get(i1).getCat_imag())
-//                .resize(100, 100)
-//                .error(R.mipmap.apps_logo)
-//                .placeholder(R.mipmap.apps_logo)
-//                .into(imageView);
+
 
         if (listChild.get(i).get(i1).getCat_imag().equals("")) {
             String img = "";

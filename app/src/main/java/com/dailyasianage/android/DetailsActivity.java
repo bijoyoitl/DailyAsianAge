@@ -2,12 +2,9 @@ package com.dailyasianage.android;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -28,18 +24,12 @@ import android.widget.Toast;
 
 import com.dailyasianage.android.Adpter.RecyclerAdapter;
 import com.dailyasianage.android.Adpter.RelatedNewsAdapter;
-import com.dailyasianage.android.All_URL.UrlLink;
 import com.dailyasianage.android.Database.AllNewsManager;
 import com.dailyasianage.android.Database.FavoriteNewsManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.ImageGallery.SlideshowDialogFragment;
-import com.dailyasianage.android.item.News;
-import com.dailyasianage.android.util.Utils;
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.squareup.picasso.Picasso;
+import com.dailyasianage.android.item.NewsAll;
+import com.dailyasianage.android.util.ImageCaching;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,16 +63,16 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     String nid;
     WebView detailsNewaWebView;
 
-    public ArrayList<News> newsIds = new ArrayList<>();
+    public ArrayList<NewsAll> newsIds = new ArrayList<>();
     RecyclerAdapter recyclerAdapter;
     public DetailsActivity detailsActivity;
-    ArrayList<News> newsArrayList = new ArrayList<News>();
+    ArrayList<NewsAll> newsArrayList = new ArrayList<NewsAll>();
 
     AllNewsManager allNewsManager;
     FavoriteNewsManager favoriteNewsManager;
 
-    private ImageLoader loader;
-    private DisplayImageOptions options;
+    NewsAll newsAll;
+    ImageCaching imageCaching;
 
 
     @Override
@@ -97,9 +87,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         allNewsManager = new AllNewsManager(context);
         favoriteNewsManager = new FavoriteNewsManager(context);
         recyclerAdapter = new RecyclerAdapter();
+        imageCaching= new ImageCaching();
+        newsAll = new NewsAll();
 
-        this.loader = ImageLoader.getInstance();
-        initOptions();
+      imageCaching.initOptions(context);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         d_ImageView = (ImageView) findViewById(R.id.d_imageView);
@@ -129,43 +120,39 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         shareButton.setOnClickListener(this);
         speechButton.setOnClickListener(this);
         d_favoriteImageView.setOnClickListener(this);
-
-        id.setText(getIntent().getStringExtra("id"));
-        fav_id = getIntent().getStringExtra("id");
-        heding.setText(Html.fromHtml(getIntent().getStringExtra("heading")));
         nid = getIntent().getStringExtra("id");
+        id.setText(nid);
+        fav_id = nid;
+        newsAll = allNewsManager.getSingleNews(nid);
 
-        cat_id = Integer.parseInt(getIntent().getStringExtra("catid"));
-        catId = getIntent().getStringExtra("catid");
 
-//        Picasso.with(context)
-//                .load(getIntent().getStringExtra("image"))
-//                .into(d_ImageView);
+        heding.setText(Html.fromHtml(newsAll.getHeading()));
 
-        if (getIntent().getStringExtra("image").equals("")) {
-            String img = "";
-            this.loader.displayImage(img, d_ImageView, this.options);
+        catId = newsAll.getCatId();
+
+
+        if (!newsAll.getImage().equals("")) {
+           imageCaching.imageSet(newsAll.getImage(),d_ImageView);
         } else {
-            String img = UrlLink.imageLink + getIntent().getStringExtra("image");
-            this.loader.displayImage(img, d_ImageView, this.options);
+            d_ImageView.setVisibility(View.GONE);
         }
 
         String fontSIze = newsDatabase.getFontSize(); //get front size from server and set into fonSize variable.
         int detailsTextSize = Integer.parseInt(fontSIze);
 
-        String de = getIntent().getStringExtra("details");
+        String de = newsAll.getDetails();
         WebSettings settings = detailsNewaWebView.getSettings();
-        settings.setTextZoom(settings.getTextZoom() + detailsTextSize);
+        settings.setDefaultFontSize(detailsTextSize);
+        detailsNewaWebView.getSettings().setLoadWithOverviewMode(true);
+        detailsNewaWebView.getSettings().setUseWideViewPort(true);
+//        detailsNewaWebView.setInitialScale(90);
         detailsNewaWebView.loadData(de, "text/html", "utf-8");
         String detail = String.valueOf(Html.fromHtml(de));
         detail = detail.replace("\n", "").replace("\r", "");
         details.setText(detail);
 
-//        details.setTextSize(detailsTextSize);
-//        details.setGravity(Gravity.FILL_HORIZONTAL);
-
-        d_timeTextView.setText(getIntent().getStringExtra("time"));
-        d_reporterTextView.setText(getIntent().getStringExtra("reporter"));
+        d_timeTextView.setText(newsAll.getPublishTime());
+        d_reporterTextView.setText(newsAll.getReporter());
         if (d_reporterTextView == null) {
             profileLayout.setVisibility(View.INVISIBLE);
         } else {
@@ -173,11 +160,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         }
 
         String subHeading;
-        subHeading = getIntent().getStringExtra("subheading");
+        subHeading = newsAll.getSubHeading();
         d_sub_heading.setText(subHeading);
 
         String shoulder;
-        shoulder = getIntent().getStringExtra("shoulder");
+        shoulder = newsAll.getShoulder();
 
         if (shoulder != null) {
             d_shoulderTextView.setVisibility(View.VISIBLE);
@@ -204,14 +191,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    private void initOptions() {
-        this.loader.init(getConfiguration());
-        this.options = new DisplayImageOptions.Builder().showImageOnLoading(R.drawable.loadingicon).showImageForEmptyUri(R.drawable.dummy).showImageOnFail(R.drawable.dummy).resetViewBeforeLoading(false).cacheInMemory(true).cacheOnDisk(true).build();
-    }
-
-    private ImageLoaderConfiguration getConfiguration() {
-        return new ImageLoaderConfiguration.Builder(this.context).diskCacheExtraOptions(480, 800, null).denyCacheImageMultipleSizesInMemory().memoryCache(new LruMemoryCache(AccessibilityNodeInfoCompat.ACTION_SET_TEXT)).memoryCacheSize(AccessibilityNodeInfoCompat.ACTION_SET_TEXT).diskCacheSize(52428800).build();
-    }
 
     private void RelatedNews() {
         newsIds = allNewsManager.getRelatedNews(catId, nid);
@@ -270,7 +249,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
             case R.id.d_imageView:
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("images", getIntent().getStringExtra("image"));
+                bundle.putSerializable("images", newsAll.getImage());
                 bundle.putInt("position", 0);
                 FragmentTransaction ft = this.getSupportFragmentManager().beginTransaction();
                 SlideshowDialogFragment newFragment = SlideshowDialogFragment.newInstance();

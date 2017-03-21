@@ -27,7 +27,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".SplashScreenActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"></activity>
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
         <activity
             android:name=".SplashActivity"
             android:configChanges="orientation|screenSize|keyboardHidden">
@@ -37,9 +37,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".NewsCheckClass"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
@@ -52,9 +49,6 @@
         <activity android:name=".HomeCustomizeActivity" />
         <activity android:name=".SettingsActivity" />
 
-        <service
-            android:name=".BackgroundUpdateService"
-            android:enabled="true" />
         <service
             android:name=".AllNewsService"
             android:enabled="true"

@@ -7,6 +7,6 @@ package com.dailyasianage.android.util;
 public class CurrentData {
     public static String initialNewsIds = "";
     public static String othersNewsIds = "";
-    public static String type = "";
+    public static String allNewsId = "";
 
 }

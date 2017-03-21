@@ -184,7 +184,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
 //                    Log.e("Splash.java", " cat id : " + allcat);
 
-                    String request = new HTTPGET().SendHttpRequest(urlLink.multiCategory + allcat);
+                    String request = new HTTPGET().SendHttpRequest(UrlLink.multiCategory + allcat);
                     try {
                         jsonObject = new JSONObject(request);
                         String cat_news = jsonObject.getString("cat");

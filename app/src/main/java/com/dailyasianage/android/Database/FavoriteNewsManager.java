@@ -4,9 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import com.dailyasianage.android.item.News;
+import com.dailyasianage.android.item.NewsAll;
 
 import java.util.ArrayList;
 
@@ -23,7 +22,7 @@ public class FavoriteNewsManager {
 
     public FavoriteNewsManager(Context context) {
         this.context = context;
-        newsDatabase=new NewsDatabase(context);
+        newsDatabase = new NewsDatabase(context);
     }
 
     //Add favorite id into favorite table
@@ -35,7 +34,7 @@ public class FavoriteNewsManager {
             database = newsDatabase.getWritableDatabase();
             database.insert(NewsDatabase.FAVORITE_TABLE_BANE, null, values);
         } catch (Exception e) {
-           e.printStackTrace();
+            e.printStackTrace();
         } finally {
             if (database.isOpen()) {
                 database.close();
@@ -45,11 +44,11 @@ public class FavoriteNewsManager {
     }
 
 
-    public ArrayList<News> getFav() {
+    public ArrayList<NewsAll> getFav() {
 
-        ArrayList<News> newsArrayList = null;
+        ArrayList<NewsAll> newsArrayList = null;
         try {
-            newsArrayList = new ArrayList<News>();
+            newsArrayList = new ArrayList<NewsAll>();
             database = newsDatabase.getReadableDatabase();
 
             String QUERY = "SELECT * FROM " + NewsDatabase.NEWS_TABLE_NAME + " where " + NewsDatabase.NEWS_ID + " in(SELECT " + NewsDatabase.FAVORITE_ID + " FROM " + NewsDatabase.FAVORITE_TABLE_BANE + ")";
@@ -57,15 +56,15 @@ public class FavoriteNewsManager {
             if (!cursor.isLast()) {
                 while (cursor.moveToNext()) {
 
-                    News news1 = new News();
-                    news1.setCat_id(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_CATEGORY_ID)));
+                    NewsAll news1 = new NewsAll();
+                    news1.setCatId(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_CATEGORY_ID)));
                     news1.setId(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_ID)));
                     news1.setHeading(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_HEADING)));
-                    news1.setSub_heading(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_SUB_HEADING)));
+                    news1.setSubHeading(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_SUB_HEADING)));
                     news1.setDetails(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_DETAILS)));
                     news1.setShoulder(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_SHOULDER)));
-                    news1.setPublish_time(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_PUBLISH_TIME)));
-                    news1.setReporter(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_PUBLISH_TIME)));
+                    news1.setPublishTime(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_PUBLISH_TIME)));
+                    news1.setReporter(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_REPORTER)));
                     news1.setImage(cursor.getString(cursor.getColumnIndex(NewsDatabase.NEWS_IMAGE)));
                     newsArrayList.add(news1);
                 }
@@ -80,6 +79,38 @@ public class FavoriteNewsManager {
             cursor.close();
         }
         return newsArrayList;
+    }
+
+    public String getFavIds() {
+        String favIds = "";
+        try {
+            database = newsDatabase.getReadableDatabase();
+
+            String QUERY = "SELECT " + NewsDatabase.FAVORITE_ID + " FROM " + NewsDatabase.FAVORITE_TABLE_BANE;
+
+            cursor = database.rawQuery(QUERY, null);
+            if (!cursor.isLast()) {
+                while (cursor.moveToNext()) {
+                    String id = cursor.getString(cursor.getColumnIndex(NewsDatabase.FAVORITE_ID));
+
+                    if (favIds.equals("")) {
+                        favIds += id;
+                    } else {
+                        favIds += "," + id;
+                    }
+
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (database.isOpen()) {
+                database.close();
+            }
+            cursor.close();
+        }
+        return favIds;
     }
 
 
@@ -100,7 +131,7 @@ public class FavoriteNewsManager {
                 return "0";
             }
         } catch (Exception e) {
-           e.printStackTrace();
+            e.printStackTrace();
         } finally {
             if (database.isOpen()) {
                 database.close();

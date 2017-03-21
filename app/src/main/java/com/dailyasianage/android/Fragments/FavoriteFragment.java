@@ -16,7 +16,7 @@ import com.dailyasianage.android.Adpter.RecyclerAdapter;
 import com.dailyasianage.android.Database.FavoriteNewsManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.R;
-import com.dailyasianage.android.item.News;
+import com.dailyasianage.android.item.NewsAll;
 
 import java.util.ArrayList;
 
@@ -26,7 +26,7 @@ public class FavoriteFragment extends Fragment {
     ProgressBar progressBar;
     TextView cat_titleTextView;
     NewsDatabase database;
-    ArrayList<News> arrayList = new ArrayList<>();
+    ArrayList<NewsAll> arrayList = new ArrayList<>();
     Context context;
     RecyclerAdapter recyclerAdapter;
 

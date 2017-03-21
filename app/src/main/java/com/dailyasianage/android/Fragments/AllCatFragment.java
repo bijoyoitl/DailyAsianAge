@@ -20,10 +20,8 @@ import com.dailyasianage.android.Database.CategoryManager;
 import com.dailyasianage.android.Database.NewsDatabase;
 import com.dailyasianage.android.NewsApis;
 import com.dailyasianage.android.R;
-import com.dailyasianage.android.item.News;
 import com.dailyasianage.android.item.NewsAll;
 import com.dailyasianage.android.item.NewsMain;
-import com.dailyasianage.android.util.CatNewsTask;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -51,7 +49,7 @@ public class AllCatFragment extends Fragment {
     private String cat_news_ids;
     private String final_cat_id = "";
     private int k;
-    public ArrayList<News> newsIds = new ArrayList<>();
+    public ArrayList<NewsAll> newsIds = new ArrayList<>();
     public RecyclerAdapter recyclerAdapter;
     private boolean isTrue = false;
     private static boolean value = false;
@@ -64,6 +62,7 @@ public class AllCatFragment extends Fragment {
     ArrayList<String> serverNewsId;
     ArrayList<String> localNewsId;
     String updateNewsIds = "";
+    String serverNewsIds = "";
 
     public AllCatFragment() {
     }
@@ -135,7 +134,7 @@ public class AllCatFragment extends Fragment {
     }
 
     public void getCatNewsId() {
-        progressBar2.setVisibility(View.VISIBLE);
+//        progressBar2.setVisibility(View.VISIBLE);
         String link = "app/?module=cat_news&cat=" + cat_id;
         retrofit = new Retrofit.Builder().baseUrl(UrlLink.baseUrl).addConverterFactory(GsonConverterFactory.create()).build();
         newsApis = retrofit.create(NewsApis.class);
@@ -154,9 +153,16 @@ public class AllCatFragment extends Fragment {
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         String id = jsonArray.getString(i);
-//                        Log.e("ACAT", "server ids : " + id);
                         serverNewsId.add(id);
+
+                        if (serverNewsIds.equals("")) {
+                            serverNewsIds += id;
+                        } else {
+                            serverNewsIds += "," + id;
+                        }
+
                     }
+
                     String dbNewsIds = categoryManager.getCatNewsId(cat_id + "");
 //                    Log.e("ACAT", "db ids : " + dbNewsIds);
                     String[] strValues = dbNewsIds.split(",");
@@ -178,8 +184,8 @@ public class AllCatFragment extends Fragment {
 
                     if (!updateNewsIds.equals("")) {
                         getAllData(updateNewsIds);
-                        categoryManager.addCatNews(cat_id + "", dbNewsIds + "," + updateNewsIds);
-                    }else {
+                        categoryManager.addCatNews(cat_id + "", serverNewsIds);
+                    } else {
                         progressBar2.setVisibility(View.GONE);
                     }
 
@@ -238,6 +244,7 @@ public class AllCatFragment extends Fragment {
                     }
 
                 }
+
 
                 newsIds = allNewsManager.getCategoryNews(String.valueOf(cat_id));
                 recyclerAdapter = new RecyclerAdapter(getActivity(), newsIds);

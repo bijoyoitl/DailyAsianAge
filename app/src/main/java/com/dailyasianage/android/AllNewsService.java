@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.annotation.IntDef;
 import android.util.Log;
 import android.view.View;
 
@@ -12,6 +13,7 @@ import com.dailyasianage.android.Database.AllNewsManager;
 import com.dailyasianage.android.Database.CategoryManager;
 import com.dailyasianage.android.item.NewsAll;
 import com.dailyasianage.android.item.NewsMain;
+import com.dailyasianage.android.util.CurrentData;
 
 import java.util.ArrayList;
 
@@ -27,7 +29,7 @@ public class AllNewsService extends Service {
     Retrofit retrofit;
     String d = "";
     Context context;
-    String allNewsId;
+    String allNewsId = "";
     String base_url = "http://dailyasianage.com/";
     CategoryManager categoryManager;
     AllNewsManager allNewsManager;
@@ -39,13 +41,24 @@ public class AllNewsService extends Service {
 
 
     @Override
-    public void onStart(Intent intent, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
         this.context = this;
         allNewsManager = new AllNewsManager(context);
         categoryManager = new CategoryManager(context);
+        try {
+            if (intent != null) {
+                allNewsId = CurrentData.othersNewsIds;
+                getAllData();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return START_STICKY;
+    }
 
-        allNewsId=intent.getStringExtra("ids");
-        getAllData();
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -101,7 +114,10 @@ public class AllNewsService extends Service {
                 }
 
 
-                Log.e("service arr cat : ", d);
+//                Log.e("service arr cat : ", d);
+
+                allNewsManager.deleteOldNews(CurrentData.allNewsId);
+                Log.e("all news id :  dd ", CurrentData.allNewsId);
 
             }
 
