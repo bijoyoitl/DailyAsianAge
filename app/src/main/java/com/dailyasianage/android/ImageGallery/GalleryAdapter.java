@@ -53,8 +53,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
 //        Log.e("GalleryAdapter.java", "line 52");
         Picasso.with(mContext)
                 .load(image.getImage())
-                .placeholder(R.drawable.dummy)
+                .placeholder(R.drawable.loadingicon)
                 .error(R.drawable.dummy_l)
+                .skipMemoryCache()
                 .into(holder.thumbnail);
         holder.image_progressBar.setVisibility(View.GONE);
     }
@@ -118,6 +119,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.MyViewHo
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public ImageView thumbnail;
         public ProgressBar image_progressBar;
+
 
         public MyViewHolder(View view) {
             super(view);

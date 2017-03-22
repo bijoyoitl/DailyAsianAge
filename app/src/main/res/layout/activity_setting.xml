@@ -24,6 +24,7 @@ tools:context="com.dailyasianage.android.SettingsActivity">
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="9dp"
+        android:visibility="gone"
         android:background="#DDDEDE"
         android:orientation="vertical">
 
@@ -32,6 +33,7 @@ tools:context="com.dailyasianage.android.SettingsActivity">
             android:layout_height="wrap_content"
             android:textSize="25sp"
             android:text=" Font Size "
+            android:visibility="gone"
             android:textColor="@android:color/black"
             android:textStyle="bold" />
 
@@ -40,6 +42,7 @@ tools:context="com.dailyasianage.android.SettingsActivity">
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/fontSizeLayout"
+        android:visibility="gone"
         android:background="@drawable/border"
         android:orientation="vertical">
         <TextView

@@ -51,7 +51,7 @@ public class CategoryManager {
             database = newsDatabase.getReadableDatabase();
             String QUERY = "SELECT " + NewsDatabase.CATEGORY_NEWS_ID + " FROM " + NewsDatabase.CATEGORY_TABLE_NAME + " WHERE " + NewsDatabase.CATEGORY_ID + " in(" + catIds + ")";
 
-            Log.e("CA", "news query : " + QUERY);
+//            Log.e("CA", "news query : " + QUERY);
 
             cursor = database.rawQuery(QUERY, null);
 
@@ -74,7 +74,7 @@ public class CategoryManager {
             }
         }
 
-        Log.e("CM ", " cat n : " + catNewsIds);
+//        Log.e("CM ", " cat n : " + catNewsIds);
 
         return catNewsIds;
     }

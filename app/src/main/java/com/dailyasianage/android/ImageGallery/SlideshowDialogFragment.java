@@ -19,7 +19,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.dailyasianage.android.R;
+import com.dailyasianage.android.*;
+import com.dailyasianage.android.TouchImageView;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -110,6 +112,7 @@ public class SlideshowDialogFragment extends DialogFragment {
     //	adapter
     public class MyViewPagerAdapter extends PagerAdapter {
         ImageView imageViewPreview;
+        com.dailyasianage.android.TouchImageView touchImageView;
         private Matrix matrix = new Matrix();
         private float scale = 1f;
         private ScaleGestureDetector SGD;
@@ -124,23 +127,17 @@ public class SlideshowDialogFragment extends DialogFragment {
             layoutInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View view = layoutInflater.inflate(R.layout.image_fullscreen_preview, container, false);
 
-//            TouchImageView imageViewPreview = (TouchImageView) view.findViewById(R.id.image_preview);
-            imageViewPreview = (ImageView) view.findViewById(R.id.image_preview);
+            touchImageView = (TouchImageView) view.findViewById(R.id.image_preview);
+//            imageViewPreview = (ImageView) view.findViewById(R.id.image_preview);
             SGD = new ScaleGestureDetector(getActivity(), new ScaleListener());
             Model image = images.get(position);
 
-            Glide.with(getActivity()).load(image.getImage())
-                    .thumbnail(0.5f)
-                    .crossFade()
-                    .skipMemoryCache(false)
-                    .into(imageViewPreview);
-//            imageViewPreview.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Animation animation1 = AnimationUtils.loadAnimation(getActivity(), R.anim.clockwise);
-//                    imageViewPreview.startAnimation(animation1);
-//                }
-//            });
+//            Glide.with(getActivity()).load(image.getImage())
+//                    .thumbnail(0.5f)
+//                    .crossFade()
+//                    .skipMemoryCache(false)
+//                    .into(touchImageView);
+            Picasso.with(getActivity()).load(image.getImage()).skipMemoryCache().into(touchImageView);
 
             container.addView(view);
 

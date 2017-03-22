@@ -115,19 +115,19 @@ public class SettingsActivity extends AppCompatActivity {
                     selection = which;
                     switch (which) {
                         case 0:
-                            newsDatabase.updateFontSize(String.valueOf(40));
+                            newsDatabase.updateFontSize(String.valueOf(15));
                             newsDatabase.updateSelector(String.valueOf(0));
                             newsDatabase.updateFontLevel("Small");
                             textViewFontSize.setText("Small");
                             break;
                         case 1:
-                            newsDatabase.updateFontSize(String.valueOf(60));
+                            newsDatabase.updateFontSize(String.valueOf(25));
                             newsDatabase.updateSelector(String.valueOf(1));
                             newsDatabase.updateFontLevel("Normal");
                             textViewFontSize.setText("Normal");
                             break;
                         case 2:
-                            newsDatabase.updateFontSize(String.valueOf(90));
+                            newsDatabase.updateFontSize(String.valueOf(35));
                             newsDatabase.updateSelector(String.valueOf(2));
                             newsDatabase.updateFontLevel("Large");
                             textViewFontSize.setText("Large");

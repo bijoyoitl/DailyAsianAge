@@ -246,11 +246,9 @@ public class MainActivity extends AppCompatActivity {
         if (i == 0) {
             fragment2 = new InitialNewsFragment();
 //            titleLayout.setVisibility(View.GONE);
-            if (fragment2 != null) {
-                fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.contentF, fragment2).commit();
-                drawer_layout.closeDrawer(navigationView);
-            }
+            fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.contentF, fragment2).commit();
+            drawer_layout.closeDrawer(navigationView);
         }
 
     }

@@ -16,8 +16,7 @@ import android.widget.ProgressBar;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.dailyasianage.android.ConnectionDetector;
-import com.dailyasianage.android.R;
+import com.dailyasianage.android.*;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -180,7 +180,7 @@ public class AllCatFragment extends Fragment {
                         }
                     }
 
-                    Log.e("ACAT", "update ids : " + updateNewsIds);
+//                    Log.e("ACAT", "update ids : " + updateNewsIds);
 
                     if (!updateNewsIds.equals("")) {
                         getAllData(updateNewsIds);
@@ -204,7 +204,7 @@ public class AllCatFragment extends Fragment {
 
 
     private void getAllData(String newsId) {
-        Log.e("NA", String.valueOf(123));
+//        Log.e("NA", String.valueOf(123));
 
         retrofit = new Retrofit.Builder().baseUrl(UrlLink.baseUrl).addConverterFactory(GsonConverterFactory.create()).build();
         newsApis = retrofit.create(NewsApis.class);
@@ -222,7 +222,7 @@ public class AllCatFragment extends Fragment {
 
                 for (int i = 0; i < newsAlls.size(); i++) {
                     String id = newsAlls.get(i).getId();
-                    Log.e("NA", String.valueOf(id));
+//                    Log.e("NA", String.valueOf(id));
                     String catId = newsAlls.get(i).getCatId();
                     String shoulder = newsAlls.get(i).getShoulder();
                     String publishTime = newsAlls.get(i).getPublishTime();

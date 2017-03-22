@@ -3,8 +3,12 @@ package com.dailyasianage.android;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -30,7 +34,10 @@ import com.google.gson.JsonObject;
 import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -78,6 +85,8 @@ public class SplashActivity extends AppCompatActivity {
     String fIds = "";
     String sIds = "";
 
+    Map<String, Integer> mPermissions;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +96,8 @@ public class SplashActivity extends AppCompatActivity {
         uiInit();
 
         if (isInternetConnection) {
+            checkAndRequestMultiplePermissions();
+
             final OkHttpClient okHttpClient = new OkHttpClient.Builder()
                     .readTimeout(30, TimeUnit.SECONDS)
                     .connectTimeout(30, TimeUnit.SECONDS)
@@ -180,7 +191,7 @@ public class SplashActivity extends AppCompatActivity {
                         }
                     }
 
-                    Log.e("SA", allcat);
+//                    Log.e("SA", allcat);
                     new CategoryNewsIdTask().execute(allcat);
 
                 } catch (JSONException e) {
@@ -225,10 +236,10 @@ public class SplashActivity extends AppCompatActivity {
 
                 while (iterator.hasNext()) {
                     String key = iterator.next();
-                    Log.e("Key", key);
+//                    Log.e("Key", key);
 
                     cat = jsonObject.getString(key);
-                    Log.e("cat", cat);
+//                    Log.e("cat", cat);
 
                     JSONArray jsonArray = new JSONArray(cat);
 
@@ -243,7 +254,7 @@ public class SplashActivity extends AppCompatActivity {
 
 
                     }
-                    Log.e("final", "cat : " + key + " news id : " + singleNewsId);
+//                    Log.e("final", "cat : " + key + " news id : " + singleNewsId);
 
                     categoryManager.addCatNews(key, singleNewsId);
                     singleNewsId = "";
@@ -306,26 +317,6 @@ public class SplashActivity extends AppCompatActivity {
         }
     }
 
-    private void getAllCatNewsId(final String allcat) {
-
-        String link = "app/?module=multi_cat_news&cat=" + allcat;
-        final Call<JsonObject> getAllCatNId = newsApis.getAllCatNewsId(link);
-
-        getAllCatNId.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-
-            }
-
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                t.printStackTrace();
-                Toast.makeText(context, "Something Went Wrong....!", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
 
     private void splashTimeOut() {
         circleProgressBar.setVisibility(View.GONE);
@@ -361,4 +352,57 @@ public class SplashActivity extends AppCompatActivity {
         }).start();
     }
 
+
+    private boolean checkAndRequestMultiplePermissions() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            List<String> listPermissionsNeeded = new ArrayList<>();
+
+//            if (ContextCompat.checkSelfPermission(this, "android.permission.READ_PHONE_STATE") != 0) {
+//                listPermissionsNeeded.add("android.permission.READ_PHONE_STATE");
+//            }
+            if (ContextCompat.checkSelfPermission(this, "android.permission.WRITE_EXTERNAL_STORAGE") != 0) {
+                listPermissionsNeeded.add("android.permission.WRITE_EXTERNAL_STORAGE");
+            }
+
+            if (ContextCompat.checkSelfPermission(this, "android.permission.READ_EXTERNAL_STORAGE") != 0) {
+                listPermissionsNeeded.add("android.permission.READ_EXTERNAL_STORAGE");
+            }
+//            Log.e("MA", "String Array : " + (String[]) listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]));
+            if (!listPermissionsNeeded.isEmpty()) {
+                ActivityCompat.requestPermissions(this, (String[]) listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), 110);
+                return false;
+            }
+
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case 110:
+                if (grantResults.length > 0) {
+                    fillPermissionsMap();
+                    int size = permissions.length;
+                    for (int i = 0; i < size; i++) {
+                        this.mPermissions.put(permissions[i], grantResults[i]);
+                    }
+                    if (this.mPermissions.get("android.permission.READ_EXTERNAL_STORAGE") == 0 && this.mPermissions.get("android.permission.WRITE_EXTERNAL_STORAGE") == 0) {
+                        return;
+                    }
+                }
+            default:
+        }
+    }
+
+    private void fillPermissionsMap() {
+        if (this.mPermissions == null && Build.VERSION.SDK_INT >= 23) {
+            this.mPermissions = new HashMap();
+//            this.mPermissions.put("android.permission.READ_PHONE_STATE", 0);
+            this.mPermissions.put("android.permission.READ_EXTERNAL_STORAGE", 0);
+            this.mPermissions.put("android.permission.WRITE_EXTERNAL_STORAGE", 0);
+        }
+    }
 }

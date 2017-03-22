@@ -80,7 +80,7 @@ public class AllNewsService extends Service {
             public void onResponse(Call<NewsMain> call, Response<NewsMain> response) {
                 NewsMain newsMain = response.body();
 
-                Log.e("NA", String.valueOf(newsMain.getStatus()));
+//                Log.e("NA", String.valueOf(newsMain.getStatus()));
 
                 ArrayList<NewsAll> newsAlls = (ArrayList<NewsAll>) newsMain.getNews();
 
@@ -99,11 +99,11 @@ public class AllNewsService extends Service {
                     String details = newsAlls.get(i).getDetails();
                     String image = newsAlls.get(i).getImage();
 
-                    if (d.equals("")) {
-                        d += id;
-                    } else {
-                        d += "," + id;
-                    }
+//                    if (d.equals("")) {
+//                        d += id;
+//                    } else {
+//                        d += "," + id;
+//                    }
 
                     NewsAll newsAll = new NewsAll(id, catId, shoulder, publishTime, publishSerial, nTopNews, nHomeSlider, nInside, heading, subHeading, reporter, details, image);
 
@@ -117,7 +117,7 @@ public class AllNewsService extends Service {
 //                Log.e("service arr cat : ", d);
 
                 allNewsManager.deleteOldNews(CurrentData.allNewsId);
-                Log.e("all news id :  dd ", CurrentData.allNewsId);
+//                Log.e("all news id :  dd ", CurrentData.allNewsId);
 
             }
 

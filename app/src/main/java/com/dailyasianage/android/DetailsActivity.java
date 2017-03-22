@@ -74,6 +74,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     NewsAll newsAll;
     ImageCaching imageCaching;
 
+    String detail = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,10 +89,10 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         allNewsManager = new AllNewsManager(context);
         favoriteNewsManager = new FavoriteNewsManager(context);
         recyclerAdapter = new RecyclerAdapter();
-        imageCaching= new ImageCaching();
+        imageCaching = new ImageCaching();
         newsAll = new NewsAll();
 
-      imageCaching.initOptions(context);
+        imageCaching.initOptions(context);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         d_ImageView = (ImageView) findViewById(R.id.d_imageView);
@@ -132,24 +134,26 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
 
         if (!newsAll.getImage().equals("")) {
-           imageCaching.imageSet(newsAll.getImage(),d_ImageView);
+            imageCaching.imageSet(newsAll.getImage(), d_ImageView);
         } else {
             d_ImageView.setVisibility(View.GONE);
         }
 
         String fontSIze = newsDatabase.getFontSize(); //get front size from server and set into fonSize variable.
         int detailsTextSize = Integer.parseInt(fontSIze);
-
+//        String htmlText = " %s ";
         String de = newsAll.getDetails();
-        WebSettings settings = detailsNewaWebView.getSettings();
-        settings.setDefaultFontSize(detailsTextSize);
-        detailsNewaWebView.getSettings().setLoadWithOverviewMode(true);
-        detailsNewaWebView.getSettings().setUseWideViewPort(true);
+//        WebSettings settings = detailsNewaWebView.getSettings();
+//        settings.setDefaultFontSize(detailsTextSize);
+//        detailsNewaWebView.getSettings().setLoadWithOverviewMode(true);
+//        detailsNewaWebView.getSettings().setUseWideViewPort(true);
 //        detailsNewaWebView.setInitialScale(90);
-        detailsNewaWebView.loadData(de, "text/html", "utf-8");
-        String detail = String.valueOf(Html.fromHtml(de));
+        detailsNewaWebView.loadData( de, "text/html", "utf-8");
+
+        detail = String.valueOf(Html.fromHtml(de));
         detail = detail.replace("\n", "").replace("\r", "");
         details.setText(detail);
+//        detailsNewaWebView.loadDataWithBaseURL("",detail,"text/html","utf-8","");
 
         d_timeTextView.setText(newsAll.getPublishTime());
         d_reporterTextView.setText(newsAll.getReporter());
@@ -272,9 +276,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private void SpeakOut() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ttsGreater21(details.getText().toString());
+            ttsGreater21(detail);
         } else {
-            ttsUnder20(details.getText().toString());
+            ttsUnder20(detail);
         }
     }
 

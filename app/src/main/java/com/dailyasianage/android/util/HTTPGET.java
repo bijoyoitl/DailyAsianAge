@@ -37,7 +37,7 @@ public class HTTPGET {
             } else {
                 response = "";
             }
-            Log.e("l ", stringsUrl);
+//            Log.e("l ", stringsUrl);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {

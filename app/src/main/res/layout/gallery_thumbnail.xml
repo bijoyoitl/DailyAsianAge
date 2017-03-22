@@ -31,7 +31,7 @@
             android:layout_height="match_parent"
             android:layout_margin="5sp"
             android:adjustViewBounds="true"
-            android:src="@drawable/dummy_l"
+            android:src="@drawable/loadingicon"
             android:scaleType="centerCrop" />
 
         <LinearLayout
